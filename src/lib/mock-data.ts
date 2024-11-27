@@ -46,7 +46,7 @@ export const mockEvents: Event[] = [
     location: '台北市萬華區',
     participants: 12,
     maxParticipants: 20,
-    image: '/images/about/volunteer1.jpg',
+    image: '/images/volunteer1.jpg',
     description: '探訪社區獨居老人，陪伴聊天並提供生活協助。我們將與社區合作，為獨居長者送上關懷與溫暖。活動內容包括：陪伴聊天、協助整理居家環境、量血壓、代購生活用品等。透過志工的參與，不僅能讓長者感受到社會的溫暖，更能促進跨世代交流，建立社區互助網絡。我們也會提供簡單的老人照護知識，讓志工們學習如何更好地與長者互動。歡迎有愛心、耐心的您加入我們的行列！',
     projectManager: {
       name: '王小明',
@@ -91,7 +91,7 @@ export const mockEvents: Event[] = [
     location: '台北市信義區',
     participants: 30,
     maxParticipants: 30,
-    image: '/images/about/feature2.jpg',
+    image: '/images/feature2.jpg',
     description: '協助整理冬季物資，包括禦寒衣物、毛毯等，為弱勢族群預備溫暖的冬天。本次活動將整理來自社會各界捐贈的冬季物資，包括衣物分類、品質檢查、整理打包等工作。我們也會介紹物資分類的標準和注意事項，確保每件物資都能發揮最大的效用。這不僅是一個付出愛心的機會，更是學習物資管理的好機會。一起來為弱勢族群的冬天盡一份心力吧！',
     projectManager: {
       name: '林美玲',
@@ -135,7 +135,7 @@ export const mockEvents: Event[] = [
     location: '台北市文山區',
     participants: 15,
     maxParticipants: 15,
-    image: '/images/about/feature3.jpg',
+    image: '/images/feature3.jpg',
     description: '為弱勢家庭孩童提供課後陪伴與課業輔導，協助他們建立良好的讀書習慣。活動內容包括：課業指導、品格教育、才藝活動等。我們希望透過志工的陪伴，不只幫助孩子們在課業上進步，更能培養正確的價值觀和生活態度。每位孩子都應該有公平的學習機會，讓我們一起為下一代的教育盡一份心力！',
     projectManager: {
       name: '陳老師',
@@ -187,7 +187,7 @@ export const mockEvents: Event[] = [
     location: '台北市大安森林公園',
     participants: 25,
     maxParticipants: 50,
-    image: '/images/about/placeholder1.jpg',
+    image: '/images/placeholder1.jpg',
     description: '一起維護城市綠地，清理公園環境，為市民創造更好的休憩空間。本次活動將以環境教育為主軸，除了基本的清潔工作外，也會介紹都市生態系統的重要性。志工們將學習辨識常見的公園植物、了解生物多樣性的價值，以及都市綠地對於城市永續發展的重要性。活動期間也會進行資源回收分類教學，讓志工們認識正確的垃圾分類方式。我們相信，透過親身參與，每個人都能成為環境保護的推廣者！',
     projectManager: {
       name: '李大方',
@@ -234,7 +234,7 @@ export const mockEvents: Event[] = [
     location: '台北市信義區',
     participants: 15,
     maxParticipants: 15,
-    image: '/images/about/placeholder1.jpg',
+    image: '/images/placeholder1.jpg',
     description: '協助整理和分類食物銀行的物資，幫助弱勢家庭獲得所需物資。',
     projectManager: {
       name: '張美玲',
@@ -280,7 +280,7 @@ export const mockEvents: Event[] = [
     location: '台北市大安區',
     participants: 15,
     maxParticipants: 30,
-    image: '/images/about/placeholder1.jpg',
+    image: '/images/placeholder1.jpg',
     description: '一起為社區環境盡一份心力，創造更美好的生活空間。',
     projectManager: {
       name: '陳志明',
@@ -324,7 +324,7 @@ export const mockEvents: Event[] = [
     location: '新北市三重區',
     participants: 17,
     maxParticipants: 20,
-    image: '/images/about/placeholder1.jpg',
+    image: '/images/placeholder1.jpg',
     description: '探訪社區長者，陪伴聊天，提供生活協助。',
     projectManager: {
       name: '林雅婷',
@@ -367,7 +367,7 @@ export const mockEvents: Event[] = [
     location: '台北市信義區',
     participants: 5,
     maxParticipants: 15,
-    image: '/images/about/placeholder1.jpg',
+    image: '/images/placeholder1.jpg',
     description: '為弱勢家庭兒童提供課業輔導及品格教育。',
     projectManager: {
       name: '黃育德',
@@ -410,7 +410,7 @@ export const mockEvents: Event[] = [
     location: '新北市瑞芳區',
     participants: 5,
     maxParticipants: 25,
-    image: '/images/about/placeholder1.jpg',
+    image: '/images/placeholder1.jpg',
     description: '為山區環境盡一份心力，維護登山步道的清潔。',
     projectManager: {
       name: '吳建志',
@@ -486,7 +486,7 @@ export const mockEvents: Event[] = [
     location: '新北市萬里區',
     participants: 10,
     maxParticipants: 40,
-    image: '/images/about/placeholder1.jpg',
+    image: '/images/placeholder1.jpg',
     description: '守護海洋生態，清理海灘垃圾，為地球盡一份心力。',
     projectManager: {
       name: '周海清',
@@ -563,7 +563,7 @@ export const mockEvents: Event[] = [
     location: '台北市中山區',
     participants: 3,
     maxParticipants: 20,
-    image: '/images/about/placeholder1.jpg',
+    image: '/images/placeholder1.jpg',
     description: '協助整理和分類食物銀行的物資，幫助弱勢家庭獲得所需物資。',
     projectManager: {
       name: '劉雪琴',

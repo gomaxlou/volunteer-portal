@@ -10,7 +10,7 @@ const navItems = [
   { name: '行事曆', href: '/calendar' },
   { name: '寶島日誌', href: '/blog' },
   { name: '影音紀錄', href: '/media' },
-  { name: '團務報告', href: '/affairs' },
+  { name: '團務報告', href: '/reports' },
   { name: '表格下載', href: '/downloads' },
   { name: '愛心捐款', href: '/donate' },
   { name: '活動相簿', href: '/gallery' },

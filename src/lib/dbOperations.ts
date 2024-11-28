@@ -1,5 +1,6 @@
 import { getDb } from './db';
 import { Event } from './types';
+import * as crypto from 'crypto';
 
 /**
  * 用戶資料結構
@@ -14,7 +15,36 @@ export interface User {
 /**
  * 活動資料結構
  */
-export type VolunteerEvent = Event;
+export interface VolunteerEvent {
+    id?: number;
+    title: string;
+    startDate: string;
+    endDate: string;
+    location: string;
+    description?: string;
+    image?: string;
+    participants?: number;
+    maxParticipants: number;
+    registrationDeadline: string;
+    projectManagerName: string;
+    projectManagerTitle?: string;
+    projectManagerEmail: string;
+    projectManagerPhone: string;
+    projectManagerLine?: string;
+    category?: string;
+    difficulty?: string;
+    requirements?: string[];  
+    benefits?: string[];     
+    items?: string[];       
+    notes?: string[];       
+    transportation?: string;
+    meetingPoint?: string;
+    schedule?: string;
+    status?: string;
+    created_at?: string;
+    updated_at?: string;
+    createdBy?: number;
+}
 
 class UserOperations {
     // 新增用戶
@@ -63,33 +93,141 @@ class UserOperations {
 }
 
 class EventOperations {
+    // 將字串陣列轉換為 JSON 字串
+    private stringArrayToJson(arr: string[] | undefined | null): string | null {
+        if (!arr) return null;
+        try {
+            return JSON.stringify(arr);
+        } catch {
+            return null;
+        }
+    }
+
+    // 將字串轉換為字串陣列
+    private jsonToStringArray(str: string | null): string[] | null {
+        if (!str) return null;
+        try {
+            // 如果字串以 [ 開頭，嘗試解析為 JSON
+            if (str.startsWith('[')) {
+                return JSON.parse(str);
+            }
+            // 否則，將其視為單個字串項目
+            return [str];
+        } catch {
+            // 如果解析失敗，返回原始字串作為單個項目
+            return [str];
+        }
+    }
+
     // 新增活動
     create(event: VolunteerEvent) {
         const db = getDb();
         try {
+            // 先檢查必填欄位
+            const requiredFields = [
+                'title',
+                'startDate',
+                'endDate',
+                'location',
+                'maxParticipants',
+                'registrationDeadline',
+                'projectManagerName',
+                'projectManagerEmail',
+                'projectManagerPhone'
+            ];
+
+            const missingFields = requiredFields.filter(field => {
+                const value = event[field as keyof VolunteerEvent];
+                const isEmpty = value === undefined || value === null || value === '' || value === ' ';
+                if (isEmpty) {
+                    console.log(`Missing required field ${field}:`, value);
+                }
+                return isEmpty;
+            });
+
+            if (missingFields.length > 0) {
+                throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+            }
+
+            // 清理和驗證 projectManagerName
+            if (typeof event.projectManagerName !== 'string' || event.projectManagerName.trim() === '') {
+                throw new Error('projectManagerName must be a non-empty string');
+            }
+            event.projectManagerName = event.projectManagerName.trim();
+
             const stmt = db.prepare(`
                 INSERT INTO events (
-                    id, title, startDate, endDate, location, description,
+                    title, startDate, endDate, location, description,
                     image, participants, maxParticipants, registrationDeadline,
-                    projectManager, details
+                    projectManagerName, projectManagerTitle, projectManagerEmail,
+                    projectManagerPhone, projectManagerLine, category, difficulty,
+                    requirements, benefits, items, notes, transportation,
+                    meetingPoint, schedule, status
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (
+                    @title, @startDate, @endDate, @location, @description,
+                    @image, @participants, @maxParticipants, @registrationDeadline,
+                    @projectManagerName, @projectManagerTitle, @projectManagerEmail,
+                    @projectManagerPhone, @projectManagerLine, @category, @difficulty,
+                    @requirements, @benefits, @items, @notes, @transportation,
+                    @meetingPoint, @schedule, @status
+                )
             `);
-            const result = stmt.run(
-                event.id,
-                event.title,
-                event.startDate,
-                event.endDate,
-                event.location,
-                event.description,
-                event.image,
-                event.participants || 0,
-                event.maxParticipants,
-                event.registrationDeadline,
-                JSON.stringify(event.projectManager),
-                JSON.stringify(event.details)
-            );
-            return result.lastInsertRowid;
+
+            // 準備要插入的數據
+            const insertData = {
+                title: event.title.trim(),
+                startDate: event.startDate,
+                endDate: event.endDate,
+                location: event.location.trim(),
+                description: (event.description || '').trim(),
+                image: event.image || '/images/default-event.jpg',
+                participants: event.participants || 0,
+                maxParticipants: event.maxParticipants,
+                registrationDeadline: event.registrationDeadline,
+                projectManagerName: event.projectManagerName,
+                projectManagerTitle: event.projectManagerTitle?.trim() || null,
+                projectManagerEmail: event.projectManagerEmail.trim(),
+                projectManagerPhone: event.projectManagerPhone.trim(),
+                projectManagerLine: event.projectManagerLine?.trim() || null,
+                category: event.category?.trim() || null,
+                difficulty: event.difficulty?.trim() || null,
+                requirements: this.stringArrayToJson(event.requirements),
+                benefits: this.stringArrayToJson(event.benefits),
+                items: this.stringArrayToJson(event.items),
+                notes: this.stringArrayToJson(event.notes),
+                transportation: event.transportation?.trim() || null,
+                meetingPoint: event.meetingPoint?.trim() || null,
+                schedule: event.schedule?.trim() || null,
+                status: event.status || 'draft'
+            };
+
+            // 輸出詳細的插入數據日誌
+            console.log('=== Event Creation Data ===');
+            console.log('Required Fields:');
+            requiredFields.forEach(field => {
+                console.log(`${field}: "${insertData[field as keyof typeof insertData]}"`);
+            });
+            console.log('\nOptional Fields:');
+            Object.entries(insertData)
+                .filter(([key]) => !requiredFields.includes(key))
+                .forEach(([key, value]) => {
+                    console.log(`${key}: "${value}"`);
+                });
+            console.log('========================');
+
+            try {
+                const result = stmt.run(insertData);
+                console.log('Event created successfully:', { changes: result.changes, lastInsertRowid: result.lastInsertRowid });
+                return result.lastInsertRowid;
+            } catch (sqlError) {
+                console.error('SQL Error:', sqlError);
+                console.error('SQL Parameters:', Object.entries(insertData).map(([key, value]) => `${key}: "${value}"`));
+                throw sqlError;
+            }
+        } catch (error) {
+            console.error('Error creating event:', error);
+            throw error;
         } finally {
             db.close();
         }
@@ -99,34 +237,159 @@ class EventOperations {
     getAll() {
         const db = getDb();
         try {
-            const events = db.prepare('SELECT * FROM events').all();
-            return events.map((event: any) => ({
-                ...event,
-                projectManager: JSON.parse(event.projectManager || '{}'),
-                details: JSON.parse(event.details || '{}')
-            }));
+            return db.prepare('SELECT * FROM events ORDER BY created_at DESC').all();
         } finally {
             db.close();
         }
     }
 
     // 根據 ID 取得活動
-    getById(id: string) {
+    getById(id: number) {
         const db = getDb();
         try {
-            const event = db.prepare('SELECT * FROM events WHERE id = ?').get(id);
-            return event ? {
+            const stmt = db.prepare('SELECT * FROM events WHERE id = ?');
+            const event = stmt.get(id);
+            if (!event) return null;
+
+            return {
                 ...event,
-                projectManager: JSON.parse(event.projectManager || '{}'),
-                details: JSON.parse(event.details || '{}')
-            } : null;
+                requirements: this.jsonToStringArray(event.requirements),
+                benefits: this.jsonToStringArray(event.benefits),
+                items: this.jsonToStringArray(event.items),
+                notes: this.jsonToStringArray(event.notes)
+            };
+        } catch (error) {
+            console.error('Error getting event by ID:', error);
+            throw error;
+        } finally {
+            db.close();
+        }
+    }
+
+    // 更新活動
+    update(id: number, event: Partial<VolunteerEvent>): boolean {
+        const db = getDb();
+        try {
+            // 先檢查活動是否存在
+            const existingEvent = this.getById(id);
+            if (!existingEvent) {
+                return false;
+            }
+
+            // 準備更新的欄位
+            const updates: string[] = [];
+            const values: any[] = [];
+
+            // 檢查每個可能的欄位
+            if (event.title !== undefined) {
+                updates.push('title = ?');
+                values.push(event.title);
+            }
+            if (event.startDate !== undefined) {
+                updates.push('startDate = ?');
+                values.push(event.startDate);
+            }
+            if (event.endDate !== undefined) {
+                updates.push('endDate = ?');
+                values.push(event.endDate);
+            }
+            if (event.location !== undefined) {
+                updates.push('location = ?');
+                values.push(event.location);
+            }
+            if (event.description !== undefined) {
+                updates.push('description = ?');
+                values.push(event.description);
+            }
+            if (event.maxParticipants !== undefined) {
+                updates.push('maxParticipants = ?');
+                values.push(event.maxParticipants);
+            }
+            if (event.registrationDeadline !== undefined) {
+                updates.push('registrationDeadline = ?');
+                values.push(event.registrationDeadline);
+            }
+            if (event.projectManagerName !== undefined) {
+                updates.push('projectManagerName = ?');
+                values.push(event.projectManagerName);
+            }
+            if (event.projectManagerTitle !== undefined) {
+                updates.push('projectManagerTitle = ?');
+                values.push(event.projectManagerTitle);
+            }
+            if (event.projectManagerEmail !== undefined) {
+                updates.push('projectManagerEmail = ?');
+                values.push(event.projectManagerEmail);
+            }
+            if (event.projectManagerPhone !== undefined) {
+                updates.push('projectManagerPhone = ?');
+                values.push(event.projectManagerPhone);
+            }
+            if (event.projectManagerLine !== undefined) {
+                updates.push('projectManagerLine = ?');
+                values.push(event.projectManagerLine);
+            }
+            if (event.requirements !== undefined) {
+                updates.push('requirements = ?');
+                values.push(this.stringArrayToJson(event.requirements));
+            }
+            if (event.benefits !== undefined) {
+                updates.push('benefits = ?');
+                values.push(this.stringArrayToJson(event.benefits));
+            }
+            if (event.items !== undefined) {
+                updates.push('items = ?');
+                values.push(this.stringArrayToJson(event.items));
+            }
+            if (event.notes !== undefined) {
+                updates.push('notes = ?');
+                values.push(this.stringArrayToJson(event.notes));
+            }
+            if (event.transportation !== undefined) {
+                updates.push('transportation = ?');
+                values.push(event.transportation);
+            }
+            if (event.meetingPoint !== undefined) {
+                updates.push('meetingPoint = ?');
+                values.push(event.meetingPoint);
+            }
+            if (event.schedule !== undefined) {
+                updates.push('schedule = ?');
+                values.push(event.schedule);
+            }
+            if (event.status !== undefined) {
+                updates.push('status = ?');
+                values.push(event.status);
+            }
+
+            // 更新 updated_at
+            updates.push('updated_at = CURRENT_TIMESTAMP');
+
+            // 如果沒有要更新的欄位，返回 true（視為更新成功）
+            if (updates.length === 0) {
+                return true;
+            }
+
+            // 執行更新
+            const query = `
+                UPDATE events 
+                SET ${updates.join(', ')}
+                WHERE id = ?
+            `;
+            values.push(id);
+
+            db.prepare(query).run(...values);
+            return true;
+        } catch (error) {
+            console.error('Error updating event:', error);
+            return false;
         } finally {
             db.close();
         }
     }
 
     // 更新活動參與人數
-    updateParticipants(id: string, count: number) {
+    updateParticipants(id: number, count: number) {
         const db = getDb();
         try {
             const stmt = db.prepare(`
@@ -142,7 +405,7 @@ class EventOperations {
     }
 
     // 刪除活動
-    delete(id: string): boolean {
+    delete(id: number): boolean {
         const db = getDb();
         try {
             const result = db.prepare('DELETE FROM events WHERE id = ?').run(id);
@@ -158,7 +421,7 @@ class EventOperations {
 
 class UserEventOperations {
     // 報名活動
-    register(userId: number, eventId: string) {
+    register(userId: number, eventId: number) {
         const db = getDb();
         const stmt = db.prepare(`
             INSERT INTO user_events (user_id, event_id)
@@ -193,13 +456,16 @@ class UserEventOperations {
         db.close();
         return events.map((event: VolunteerEvent) => ({
             ...event,
-            projectManager: JSON.parse(event.projectManager || '{}'),
-            details: JSON.parse(event.details || '{}')
+            projectManagerName: event.projectManagerName,
+            projectManagerTitle: event.projectManagerTitle,
+            projectManagerEmail: event.projectManagerEmail,
+            projectManagerPhone: event.projectManagerPhone,
+            projectManagerLine: event.projectManagerLine
         }));
     }
 
     // 取得活動的所有參與用戶
-    getEventUsers(eventId: string) {
+    getEventUsers(eventId: number) {
         const db = getDb();
         const users = db.prepare(`
             SELECT u.*, ue.status

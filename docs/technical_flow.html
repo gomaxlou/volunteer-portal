@@ -235,40 +235,290 @@ export const jsonToStringArray = (json: string | null): string[] => {
         <section id="database" class="mb-12">
             <h2 class="text-2xl font-semibold mb-4">3. 資料庫結構</h2>
             <div class="flow-diagram">
-                <h3 class="font-semibold mb-4">Events 表格結構</h3>
+                <h3 class="font-semibold mb-4">資料庫檔案</h3>
+                <div class="bg-gray-50 p-4 rounded-lg mb-8">
+                    <p class="mb-2"><strong>檔案位置：</strong> <code>./data/volunteer.db</code></p>
+                    <p class="mb-2"><strong>資料庫類型：</strong> SQLite3</p>
+                    <p><strong>初始化過程：</strong></p>
+                    <ol class="list-decimal list-inside mt-2">
+                        <li>檢查 data 目錄是否存在，不存在則建立</li>
+                        <li>建立資料庫連接</li>
+                        <li>啟用外鍵約束</li>
+                        <li>建立必要的資料表（users、events）</li>
+                        <li>建立預設管理員帳號（如果不存在）</li>
+                    </ol>
+                </div>
+
+                <h3 class="font-semibold mb-4">Users 表格</h3>
                 <table class="database-table">
                     <thead>
                         <tr>
                             <th>欄位名稱</th>
                             <th>資料類型</th>
-                            <th>可為空</th>
                             <th>說明</th>
+                            <th>備註</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>id</td>
                             <td>INTEGER</td>
-                            <td>否</td>
-                            <td>主鍵，自動遞增</td>
+                            <td>使用者唯一識別碼</td>
+                            <td>PRIMARY KEY, AUTOINCREMENT</td>
+                        </tr>
+                        <tr>
+                            <td>chinese_name</td>
+                            <td>TEXT</td>
+                            <td>中文姓名</td>
+                            <td>NOT NULL</td>
+                        </tr>
+                        <tr>
+                            <td>english_name</td>
+                            <td>TEXT</td>
+                            <td>英文姓名</td>
+                            <td>可為空</td>
+                        </tr>
+                        <tr>
+                            <td>username</td>
+                            <td>TEXT</td>
+                            <td>使用者帳號</td>
+                            <td>NOT NULL, UNIQUE</td>
+                        </tr>
+                        <tr>
+                            <td>password</td>
+                            <td>TEXT</td>
+                            <td>使用者密碼（加密後）</td>
+                            <td>NOT NULL</td>
+                        </tr>
+                        <tr>
+                            <td>email</td>
+                            <td>TEXT</td>
+                            <td>電子郵件</td>
+                            <td>NOT NULL, UNIQUE</td>
+                        </tr>
+                        <tr>
+                            <td>gender</td>
+                            <td>TEXT</td>
+                            <td>性別</td>
+                            <td>NOT NULL, CHECK (gender IN ('M', 'F'))</td>
+                        </tr>
+                        <tr>
+                            <td>birthday</td>
+                            <td>DATE</td>
+                            <td>出生日期</td>
+                            <td>NOT NULL</td>
+                        </tr>
+                        <tr>
+                            <td>phone</td>
+                            <td>TEXT</td>
+                            <td>聯絡電話</td>
+                            <td>NOT NULL</td>
+                        </tr>
+                        <tr>
+                            <td>id_number</td>
+                            <td>TEXT</td>
+                            <td>身分證字號</td>
+                            <td>NOT NULL, UNIQUE</td>
+                        </tr>
+                        <tr>
+                            <td>skills</td>
+                            <td>TEXT</td>
+                            <td>專長技能（JSON格式）</td>
+                            <td>可為空</td>
+                        </tr>
+                        <tr>
+                            <td>role</td>
+                            <td>TEXT</td>
+                            <td>使用者角色</td>
+                            <td>NOT NULL, DEFAULT 'user', CHECK (role IN ('admin', 'user'))</td>
+                        </tr>
+                        <tr>
+                            <td>created_at</td>
+                            <td>DATETIME</td>
+                            <td>帳號建立時間</td>
+                            <td>DEFAULT CURRENT_TIMESTAMP</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="font-semibold mb-4 mt-8">Events 表格結構</h3>
+                <table class="database-table">
+                    <thead>
+                        <tr>
+                            <th>欄位名稱</th>
+                            <th>資料類型</th>
+                            <th>說明</th>
+                            <th>備註</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>id</td>
+                            <td>INTEGER</td>
+                            <td>活動唯一識別碼</td>
+                            <td>PRIMARY KEY, AUTOINCREMENT</td>
                         </tr>
                         <tr>
                             <td>title</td>
                             <td>TEXT</td>
-                            <td>否</td>
                             <td>活動標題</td>
+                            <td>NOT NULL</td>
+                        </tr>
+                        <tr>
+                            <td>startDate</td>
+                            <td>TEXT</td>
+                            <td>活動開始日期</td>
+                            <td>NOT NULL</td>
+                        </tr>
+                        <tr>
+                            <td>endDate</td>
+                            <td>TEXT</td>
+                            <td>活動結束日期</td>
+                            <td>NOT NULL</td>
+                        </tr>
+                        <tr>
+                            <td>location</td>
+                            <td>TEXT</td>
+                            <td>活動地點</td>
+                            <td>NOT NULL</td>
                         </tr>
                         <tr>
                             <td>description</td>
                             <td>TEXT</td>
-                            <td>是</td>
                             <td>活動描述</td>
+                            <td>可為空</td>
+                        </tr>
+                        <tr>
+                            <td>image</td>
+                            <td>TEXT</td>
+                            <td>活動圖片路徑</td>
+                            <td>DEFAULT '/images/default-event.jpg'</td>
+                        </tr>
+                        <tr>
+                            <td>participants</td>
+                            <td>INTEGER</td>
+                            <td>目前報名人數</td>
+                            <td>DEFAULT 0</td>
+                        </tr>
+                        <tr>
+                            <td>maxParticipants</td>
+                            <td>INTEGER</td>
+                            <td>最大報名人數</td>
+                            <td>NOT NULL</td>
+                        </tr>
+                        <tr>
+                            <td>registrationDeadline</td>
+                            <td>TEXT</td>
+                            <td>報名截止日期</td>
+                            <td>NOT NULL</td>
+                        </tr>
+                        <tr>
+                            <td>projectManagerName</td>
+                            <td>TEXT</td>
+                            <td>專案負責人姓名</td>
+                            <td>NOT NULL</td>
+                        </tr>
+                        <tr>
+                            <td>projectManagerTitle</td>
+                            <td>TEXT</td>
+                            <td>專案負責人職稱</td>
+                            <td>可為空</td>
+                        </tr>
+                        <tr>
+                            <td>projectManagerEmail</td>
+                            <td>TEXT</td>
+                            <td>專案負責人電子郵件</td>
+                            <td>NOT NULL</td>
+                        </tr>
+                        <tr>
+                            <td>projectManagerPhone</td>
+                            <td>TEXT</td>
+                            <td>專案負責人電話</td>
+                            <td>NOT NULL</td>
+                        </tr>
+                        <tr>
+                            <td>projectManagerLine</td>
+                            <td>TEXT</td>
+                            <td>專案負責人Line ID</td>
+                            <td>可為空</td>
+                        </tr>
+                        <tr>
+                            <td>category</td>
+                            <td>TEXT</td>
+                            <td>活動類別</td>
+                            <td>可為空</td>
+                        </tr>
+                        <tr>
+                            <td>difficulty</td>
+                            <td>TEXT</td>
+                            <td>活動難度</td>
+                            <td>可為空</td>
                         </tr>
                         <tr>
                             <td>requirements</td>
                             <td>TEXT</td>
-                            <td>是</td>
-                            <td>JSON 格式的需求清單</td>
+                            <td>活動要求（JSON格式）</td>
+                            <td>可為空</td>
+                        </tr>
+                        <tr>
+                            <td>benefits</td>
+                            <td>TEXT</td>
+                            <td>活動福利（JSON格式）</td>
+                            <td>可為空</td>
+                        </tr>
+                        <tr>
+                            <td>items</td>
+                            <td>TEXT</td>
+                            <td>攜帶物品（JSON格式）</td>
+                            <td>可為空</td>
+                        </tr>
+                        <tr>
+                            <td>notes</td>
+                            <td>TEXT</td>
+                            <td>注意事項（JSON格式）</td>
+                            <td>可為空</td>
+                        </tr>
+                        <tr>
+                            <td>transportation</td>
+                            <td>TEXT</td>
+                            <td>交通資訊</td>
+                            <td>可為空</td>
+                        </tr>
+                        <tr>
+                            <td>meetingPoint</td>
+                            <td>TEXT</td>
+                            <td>集合地點</td>
+                            <td>可為空</td>
+                        </tr>
+                        <tr>
+                            <td>schedule</td>
+                            <td>TEXT</td>
+                            <td>活動行程（JSON格式）</td>
+                            <td>可為空</td>
+                        </tr>
+                        <tr>
+                            <td>status</td>
+                            <td>TEXT</td>
+                            <td>活動狀態</td>
+                            <td>DEFAULT 'draft'</td>
+                        </tr>
+                        <tr>
+                            <td>created_at</td>
+                            <td>DATETIME</td>
+                            <td>建立時間</td>
+                            <td>DEFAULT CURRENT_TIMESTAMP</td>
+                        </tr>
+                        <tr>
+                            <td>updated_at</td>
+                            <td>DATETIME</td>
+                            <td>更新時間</td>
+                            <td>DEFAULT CURRENT_TIMESTAMP</td>
+                        </tr>
+                        <tr>
+                            <td>createdBy</td>
+                            <td>TEXT</td>
+                            <td>建立者ID</td>
+                            <td>REFERENCES users(id)</td>
                         </tr>
                     </tbody>
                 </table>

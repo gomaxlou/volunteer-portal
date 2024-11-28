@@ -1,249 +1,219 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Calendar, MapPin, Users, Clock, User, Phone, Mail, ChevronDown, ChevronUp } from 'lucide-react'
+import { 
+  Calendar, 
+  MapPin, 
+  Users, 
+  Clock, 
+  User, 
+  Phone, 
+  Mail, 
+  ChevronDown, 
+  ChevronUp, 
+  Edit, 
+  Trash2 
+} from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { LoadingSkeleton } from '@/components/shared/Loading'
-import { Event } from '@/lib/mock-data'
+import { Event } from '@/lib/types'
+import { checkAuth, type UserInfo } from '@/lib/auth'
+import { useRouter } from 'next/navigation'
 
-interface EventCardProps extends Event {
-  projectManager: {
-    name: string
-    title: string
-    phone: string
-    email: string
-    line?: string
-  }
+interface EventCardProps {
+  event: Event
+  isAuthenticated?: boolean
+  isAdmin?: boolean
+  priority?: boolean
 }
 
-export default function EventCard({
-  id,
-  title,
-  date,
-  location,
-  participants,
-  maxParticipants,
-  image,
-  description,
-  registrationDeadline,
-  projectManager,
-}: EventCardProps) {
+export default function EventCard({ event, isAuthenticated, isAdmin, priority }: EventCardProps) {
+  const router = useRouter()
+  
+  if (!event) {
+    return <LoadingSkeleton />
+  }
+
+  const {
+    id,
+    title,
+    startDate,
+    endDate,
+    location,
+    participants,
+    maxParticipants,
+    image,
+    description,
+    registrationDeadline,
+    projectManager,
+  } = event
+
   const [isClient, setIsClient] = useState(false)
   const [imageError, setImageError] = useState(false)
   const [isPmInfoExpanded, setIsPmInfoExpanded] = useState(false)
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     setIsClient(true)
   }, [])
 
-  if (!isClient) {
-    return <LoadingSkeleton />
-  }
+  const handleDelete = async () => {
+    if (!isAdmin) return;
+    
+    if (window.confirm('確定要刪除這個活動嗎？')) {
+      setIsDeleting(true);
+      try {
+        const response = await fetch(`/api/events/${id}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
 
-  // 計算各種狀態
-  const now = new Date()
-  const eventDate = new Date(date)
-  const deadlineDate = new Date(registrationDeadline)
-  
-  const isExpired = eventDate < now
-  const isRegistrationClosed = deadlineDate < now
-  const daysUntilDeadline = Math.ceil((deadlineDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-  
-  const remainingSpots = maxParticipants - participants
-  const isFull = remainingSpots <= 0
-  const isAlmostFull = remainingSpots <= maxParticipants * 0.2 // 剩餘名額小於等於20%
-
-  // 決定狀態標籤
-  const getStatusBadge = () => {
-    if (isExpired) {
-      return {
-        text: '活動結束',
-        className: 'bg-red-500'
+        if (response.ok) {
+          router.refresh();
+        } else {
+          const error = await response.json();
+          alert(error.message || '刪除活動失敗');
+        }
+      } catch (error) {
+        console.error('Delete event error:', error);
+        alert('刪除活動失敗');
+      } finally {
+        setIsDeleting(false);
       }
     }
-    if (isRegistrationClosed) {
-      return {
-        text: '報名截止',
-        className: 'bg-gray-500'
-      }
-    }
-    if (isFull) {
-      return {
-        text: '名額已滿',
-        className: 'bg-red-500'
-      }
-    }
-    if (daysUntilDeadline <= 3) {
-      return {
-        text: `報名倒數 ${daysUntilDeadline} 天`,
-        className: 'bg-orange-500'
-      }
-    }
-    if (isAlmostFull) {
-      return {
-        text: `剩餘 ${remainingSpots} 名額`,
-        className: 'bg-yellow-500'
-      }
-    }
-    return null
-  }
-
-  // 格式化日期顯示
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('zh-TW', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long'
-    })
-  }
-
-  const statusBadge = getStatusBadge()
+  };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden group hover:shadow-xl transition-shadow duration-300">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      {/* 活動圖片 */}
       <div className="relative h-48">
-        <Image 
-          src={imageError ? '/placeholder-event.jpg' : image}
-          alt={title} 
-          fill 
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        <Image
+          src={!imageError ? (image || '/images/placeholder1.jpg') : '/images/placeholder1.jpg'}
+          alt={title}
+          fill
+          priority={priority}
+          className="object-cover"
           onError={() => setImageError(true)}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
-        {statusBadge && (
-          <div className={`absolute top-4 right-4 ${statusBadge.className} text-white px-3 py-1 rounded-full text-sm font-medium`}>
-            {statusBadge.text}
+        {isAdmin && (
+          <div className="absolute top-2 right-2 flex space-x-2">
+            <Link
+              href={`/events/${id}/edit`}
+              className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100"
+            >
+              <Edit className="h-4 w-4 text-gray-600" />
+            </Link>
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100 disabled:opacity-50"
+            >
+              <Trash2 className="h-4 w-4 text-red-600" />
+            </button>
           </div>
         )}
       </div>
-      <div className="p-6">
-        <h3 className="text-xl font-semibold text-gray-900 mb-3">{title}</h3>
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-4 rounded-lg mb-4 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
-          <div className="flex items-start">
-            <div className="flex-shrink-0 mr-3">
-              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2"></div>
-            </div>
-            <div className="flex-grow">
-              <p className={`
-                text-gray-800 
-                leading-relaxed 
-                ${isDescriptionExpanded ? 'h-auto' : 'line-clamp-3'} 
-                text-base 
-                font-medium
-                transition-all 
-                duration-500
-                ${isDescriptionExpanded ? 'mb-4' : 'mb-2'}
-              `}>
-                {description}
-              </p>
-              {description.length > 100 && (
-                <div className="mt-3">
-                  <button 
-                    onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)} 
-                    className="inline-flex items-center text-blue-600 text-sm hover:text-blue-700 focus:outline-none font-semibold bg-white px-3 py-1 rounded-full shadow-sm hover:shadow transition-all duration-200"
-                  >
-                    {isDescriptionExpanded ? (
-                      <>
-                        收起詳情
-                        <ChevronUp className="h-4 w-4 ml-1" />
-                      </>
-                    ) : (
-                      <>
-                        查看更多
-                        <ChevronDown className="h-4 w-4 ml-1" />
-                      </>
-                    )}
-                  </button>
-                </div>
-              )}
-            </div>
+
+      {/* 活動內容 */}
+      <div className="p-4">
+        <Link href={`/events/${id}`} className="block">
+          <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
+        </Link>
+
+        <div className="space-y-2 text-sm text-gray-600">
+          <div className="flex items-center">
+            <Calendar className="h-4 w-4 mr-2" />
+            <span>{startDate}{endDate ? ` ~ ${endDate}` : ''}</span>
           </div>
-        </div>
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center text-gray-600">
-            <Calendar className="h-5 w-5 mr-2" />
-            <span>{formatDate(date)}</span>
-          </div>
-          <div className="flex items-center text-gray-600">
-            <MapPin className="h-5 w-5 mr-2" />
+          <div className="flex items-center">
+            <MapPin className="h-4 w-4 mr-2" />
             <span>{location}</span>
           </div>
-          <div className="flex items-center text-gray-600">
-            <Users className="h-5 w-5 mr-2" />
-            <span className={isAlmostFull ? 'text-yellow-600 font-medium' : ''}>
-              {participants}/{maxParticipants} 人已報名
-              {isAlmostFull && !isFull && ' (即將額滿)'}
+          <div className="flex items-center">
+            <Users className="h-4 w-4 mr-2" />
+            <span>
+              {participants}/{maxParticipants} 人
+              {maxParticipants === participants && (
+                <span className="ml-2 text-red-600">（已額滿）</span>
+              )}
             </span>
           </div>
-          <div className="flex items-center text-gray-600">
-            <Clock className="h-5 w-5 mr-2" />
-            <span className={daysUntilDeadline <= 3 && !isRegistrationClosed ? 'text-orange-600 font-medium' : ''}>
-              報名截止：{formatDate(registrationDeadline)}
-            </span>
-          </div>
-        </div>
-        <div className="mt-4 border-t pt-4">
-          <div 
-            className="flex items-center justify-between cursor-pointer"
-            onClick={() => setIsPmInfoExpanded(!isPmInfoExpanded)}
-          >
-            <div className="flex items-center space-x-2">
-              <User className="h-5 w-5 text-gray-500" />
-              <span className="font-medium">{projectManager.name}</span>
-              <span className="text-sm text-gray-500">({projectManager.title})</span>
+          {registrationDeadline && (
+            <div className="flex items-center">
+              <Clock className="h-4 w-4 mr-2" />
+              <span>報名截止：{registrationDeadline}</span>
             </div>
-            {isPmInfoExpanded ? (
-              <ChevronUp className="h-5 w-5 text-gray-500" />
-            ) : (
-              <ChevronDown className="h-5 w-5 text-gray-500" />
+          )}
+        </div>
+
+        {/* 活動描述 */}
+        <div className="mt-4">
+          <div className={`text-gray-600 text-sm ${!isDescriptionExpanded ? 'line-clamp-2' : ''}`}>
+            {description}
+          </div>
+          {description && description.length > 100 && (
+            <button
+              onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+              className="text-green-600 text-sm mt-1 flex items-center hover:text-green-700"
+            >
+              {isDescriptionExpanded ? (
+                <>
+                  收起
+                  <ChevronUp className="h-4 w-4 ml-1" />
+                </>
+              ) : (
+                <>
+                  展開
+                  <ChevronDown className="h-4 w-4 ml-1" />
+                </>
+              )}
+            </button>
+          )}
+        </div>
+
+        {/* 負責人資訊 */}
+        {projectManager && (
+          <div className="mt-4 pt-4 border-t">
+            <button
+              onClick={() => setIsPmInfoExpanded(!isPmInfoExpanded)}
+              className="flex items-center justify-between w-full text-sm text-gray-600 hover:text-gray-900"
+            >
+              <span className="font-medium">負責人資訊</span>
+              {isPmInfoExpanded ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </button>
+            
+            {isPmInfoExpanded && (
+              <div className="mt-2 space-y-2 text-sm text-gray-600">
+                <div className="flex items-center">
+                  <User className="h-4 w-4 mr-2" />
+                  <span>{projectManager.name}</span>
+                  {projectManager.title && (
+                    <span className="ml-2 text-gray-500">（{projectManager.title}）</span>
+                  )}
+                </div>
+                {projectManager.phone && (
+                  <div className="flex items-center">
+                    <Phone className="h-4 w-4 mr-2" />
+                    <span>{projectManager.phone}</span>
+                  </div>
+                )}
+                {projectManager.email && (
+                  <div className="flex items-center">
+                    <Mail className="h-4 w-4 mr-2" />
+                    <span>{projectManager.email}</span>
+                  </div>
+                )}
+              </div>
             )}
           </div>
-          {isPmInfoExpanded && (
-            <div className="mt-3 pl-7 space-y-2 animate-fadeIn">
-              <div className="flex items-center space-x-2">
-                <Phone className="h-4 w-4 text-gray-500" />
-                <a href={`tel:${projectManager.phone}`} className="text-blue-600 hover:underline text-sm">
-                  {projectManager.phone}
-                </a>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Mail className="h-4 w-4 text-gray-500" />
-                <a href={`mailto:${projectManager.email}`} className="text-blue-600 hover:underline text-sm">
-                  {projectManager.email}
-                </a>
-              </div>
-              {projectManager.line && (
-                <div className="flex items-center space-x-2">
-                  <img src="/line-icon.svg" alt="LINE" className="h-4 w-4" />
-                  <span className="text-sm">{projectManager.line}</span>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-        <div className="mt-8 text-center">
-          {!isRegistrationClosed && !isFull ? (
-            <Link
-              href={`/events/${id}`}
-              className={`
-                inline-block px-6 py-2 rounded-full text-sm font-medium
-                transition-colors duration-300
-                bg-green-600 text-white hover:bg-green-700
-                w-full sm:w-auto
-              `}
-            >
-              立即參與
-            </Link>
-          ) : (
-            <div className="text-center py-2 px-4 bg-gray-100 text-gray-500 rounded-md">
-              {isFull ? '名額已滿' : '報名已截止'}
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </div>
   )

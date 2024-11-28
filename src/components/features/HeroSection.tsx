@@ -78,6 +78,7 @@ export default function HeroSection() {
                     src={card.image}
                     alt={card.title}
                     fill
+                    priority={index === 0}
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />

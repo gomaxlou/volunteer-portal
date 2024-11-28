@@ -1,8 +1,12 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import Loading, { LoadingSkeleton } from '@/components/shared/Loading'
+import Link from 'next/link'
+import { Event } from '@/lib/types'
+import { PlusCircle } from 'lucide-react'
+import { checkAuth, type UserInfo } from '@/lib/auth'
 
 const HeroSection = dynamic(() => import('@/components/features/HeroSection'), {
   loading: () => <LoadingSkeleton height="h-[60vh] min-h-[400px]" />,
@@ -12,40 +16,27 @@ const EventCard = dynamic(() => import('@/components/features/EventCard'), {
   loading: () => <LoadingSkeleton />,
 })
 
-const mockEvents = [
-  {
-    id: '1',
-    title: '社區環境清潔日',
-    date: '2024-03-15',
-    location: '台北市大安區',
-    participants: 15,
-    maxParticipants: 30,
-    image: 'https://picsum.photos/id/1059/800/600',
-    description: '一起為社區環境盡一份心力，創造更美好的生活空間。',
-  },
-  {
-    id: '2',
-    title: '長者關懷活動',
-    date: '2024-03-20',
-    location: '新北市三重區',
-    participants: 8,
-    maxParticipants: 20,
-    image: 'https://picsum.photos/id/1071/800/600',
-    description: '探訪社區長者，陪伴聊天，提供生活協助。',
-  },
-  {
-    id: '3',
-    title: '兒童教育志工',
-    date: '2024-03-25',
-    location: '台北市信義區',
-    participants: 12,
-    maxParticipants: 15,
-    image: 'https://picsum.photos/id/1076/800/600',
-    description: '為弱勢家庭兒童提供課業輔導及品格教育。',
-  },
-]
-
 export default function HomeContent() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [user, setUser] = useState<UserInfo | null>(null);
+
+  useEffect(() => {
+    // 檢查用戶身份
+    checkAuth().then(userInfo => {
+      setUser(userInfo);
+    });
+
+    // 從 API 取得活動資料
+    fetch('/api/events')
+      .then(res => res.json())
+      .then(data => {
+        setEvents(data);
+      })
+      .catch(() => {
+        // 錯誤處理
+      });
+  }, []);
+
   return (
     <>
       <Suspense fallback={<LoadingSkeleton height="h-[60vh] min-h-[400px]" />}>
@@ -54,15 +45,38 @@ export default function HomeContent() {
       
       <section className="py-16 bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            近期活動
-          </h2>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">
+              近期活動
+            </h2>
+            {user?.role === 'admin' && (
+              <Link
+                href="/events/create"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                <PlusCircle className="h-5 w-5 mr-2" />
+                新增活動
+              </Link>
+            )}
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {mockEvents.map((event) => (
-              <Suspense key={event.id} fallback={<LoadingSkeleton />}>
-                <EventCard {...event} />
-              </Suspense>
-            ))}
+            {events
+              .filter(event => {
+                const eventDate = new Date(event.startDate)
+                const now = new Date()
+                return eventDate >= now
+              })
+              .sort((a, b) => {
+                const dateA = new Date(a.startDate)
+                const dateB = new Date(b.startDate)
+                return dateB.getTime() - dateA.getTime()
+              })
+              .slice(0, 6)  // 只顯示前6個活動
+              .map((event, index) => (
+                <Suspense key={event.id} fallback={<LoadingSkeleton />}>
+                  <EventCard event={event} priority={index === 0} />
+                </Suspense>
+              ))}
           </div>
         </div>
       </section>

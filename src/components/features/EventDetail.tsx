@@ -1,6 +1,6 @@
 'use client'
 
-import { Event } from '@/lib/mock-data'
+import { Event } from '@/lib/types'
 import Image from 'next/image'
 import { useState } from 'react'
 import { CalendarDays, MapPin, Users, Clock, AlertTriangle } from 'lucide-react'
@@ -26,7 +26,7 @@ export default function EventDetail({ event }: EventDetailProps) {
     簡單: 'bg-green-100 text-green-800',
     中等: 'bg-yellow-100 text-yellow-800',
     困難: 'bg-red-100 text-red-800'
-  }[event.details.difficulty || '中等']
+  }[event.details?.difficulty || '中等']
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -34,10 +34,15 @@ export default function EventDetail({ event }: EventDetailProps) {
         {/* 活動圖片 */}
         <div className="relative h-96 w-full">
           <Image
-            src={event.image}
+            src={event.image || '/images/placeholder1.jpg'}
             alt={event.title}
             fill
+            priority={true}
+            sizes="100vw"
             className="object-cover"
+            onError={(e: any) => {
+              e.target.src = '/images/placeholder1.jpg'
+            }}
           />
         </div>
 
@@ -47,12 +52,12 @@ export default function EventDetail({ event }: EventDetailProps) {
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-3xl font-bold text-gray-900">{event.title}</h1>
               <div className="flex items-center gap-4">
-                {event.details.difficulty && (
+                {event.details?.difficulty && (
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${difficultyColor}`}>
                     {event.details.difficulty}
                   </span>
                 )}
-                {event.details.duration && (
+                {event.details?.duration && (
                   <span className="flex items-center text-gray-600">
                     <Clock className="w-5 h-5 mr-1" />
                     {event.details.duration}
@@ -63,7 +68,7 @@ export default function EventDetail({ event }: EventDetailProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
               <div className="flex items-center">
                 <CalendarDays className="w-5 h-5 mr-2" />
-                {event.date}
+                {event.startDate}{event.endDate ? ` ~ ${event.endDate}` : ''}
               </div>
               <div className="flex items-center">
                 <MapPin className="w-5 h-5 mr-2" />
@@ -73,7 +78,7 @@ export default function EventDetail({ event }: EventDetailProps) {
                 <Users className="w-5 h-5 mr-2" />
                 {event.participants}/{event.maxParticipants} 人
               </div>
-              {event.details.category && (
+              {event.details?.category && (
                 <div className="flex items-center">
                   <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
                     {event.details.category}
@@ -90,7 +95,7 @@ export default function EventDetail({ event }: EventDetailProps) {
           </div>
 
           {/* 集合資訊 */}
-          {event.details.meetingPoint && (
+          {event.details?.meetingPoint && (
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">集合資訊</h2>
               <div className="bg-gray-50 p-4 rounded-lg">
@@ -103,7 +108,7 @@ export default function EventDetail({ event }: EventDetailProps) {
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">活動流程</h2>
             <div className="space-y-2">
-              {event.details.schedule.map((item, index) => (
+              {event.details?.schedule?.map((item, index) => (
                 <div key={index} className="flex items-start">
                   <div className="bg-green-100 rounded-full w-8 h-8 flex items-center justify-center mr-3 mt-1">
                     <span className="text-green-800 font-medium">{index + 1}</span>
@@ -115,7 +120,7 @@ export default function EventDetail({ event }: EventDetailProps) {
           </div>
 
           {/* 攜帶物品 */}
-          {event.details.items && (
+          {event.details?.items && (
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">攜帶物品</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -130,7 +135,7 @@ export default function EventDetail({ event }: EventDetailProps) {
           )}
 
           {/* 注意事項 */}
-          {event.details.notes && (
+          {event.details?.notes && (
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">注意事項</h2>
               <div className="bg-yellow-50 p-4 rounded-lg">
@@ -148,7 +153,7 @@ export default function EventDetail({ event }: EventDetailProps) {
           )}
 
           {/* 交通資訊 */}
-          {event.details.transportation && (
+          {event.details?.transportation && (
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">交通方式</h2>
               <div className="space-y-2">
@@ -160,7 +165,7 @@ export default function EventDetail({ event }: EventDetailProps) {
           )}
 
           {/* 天氣資訊 */}
-          {event.details.weather && (
+          {event.details?.weather && (
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">天氣相關</h2>
               <div className="bg-blue-50 p-4 rounded-lg">
@@ -174,7 +179,7 @@ export default function EventDetail({ event }: EventDetailProps) {
           )}
 
           {/* 適合對象 */}
-          {event.details.targetAudience && (
+          {event.details?.targetAudience && (
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">適合對象</h2>
               <div className="flex flex-wrap gap-2">
@@ -194,7 +199,7 @@ export default function EventDetail({ event }: EventDetailProps) {
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">報名要求</h2>
             <ul className="list-disc list-inside space-y-2">
-              {event.details.requirements.map((req, index) => (
+              {event.details?.requirements?.map((req, index) => (
                 <li key={index} className="text-gray-600">{req}</li>
               ))}
             </ul>
@@ -204,7 +209,7 @@ export default function EventDetail({ event }: EventDetailProps) {
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">活動福利</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {event.details.benefits.map((benefit, index) => (
+              {event.details?.benefits?.map((benefit, index) => (
                 <div key={index} className="flex items-center">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
                   <span className="text-gray-600">{benefit}</span>
@@ -217,9 +222,9 @@ export default function EventDetail({ event }: EventDetailProps) {
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">聯絡資訊</h2>
             <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-gray-600 mb-2">聯絡人：{event.details.contact.name}</p>
-              <p className="text-gray-600 mb-2">電話：{event.details.contact.phone}</p>
-              <p className="text-gray-600">Email：{event.details.contact.email}</p>
+              <p className="text-gray-600 mb-2">聯絡人：{event.details?.contact?.name}</p>
+              <p className="text-gray-600 mb-2">電話：{event.details?.contact?.phone}</p>
+              <p className="text-gray-600">Email：{event.details?.contact?.email}</p>
             </div>
           </div>
 

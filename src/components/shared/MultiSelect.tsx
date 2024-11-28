@@ -9,18 +9,18 @@ interface Option {
 }
 
 interface MultiSelectProps {
-  options: Option[]
-  value: Set<string>
-  onChange: (value: Set<string>) => void
-  placeholder: string
+  options: readonly Option[]
+  selectedValues: Set<string>
+  onChange: (selectedValues: Set<string>) => void
+  placeholder?: string
   className?: string
 }
 
 export default function MultiSelect({
   options,
-  value,
+  selectedValues,
   onChange,
-  placeholder,
+  placeholder = '請選擇',  // 添加默認值
   className = ''
 }: MultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false)
@@ -42,7 +42,7 @@ export default function MultiSelect({
 
   // 處理選項切換
   const handleToggleOption = (optionValue: string) => {
-    const newValue = new Set(value)
+    const newValue = new Set(selectedValues)
     if (newValue.has(optionValue)) {
       newValue.delete(optionValue)
     } else {
@@ -59,7 +59,7 @@ export default function MultiSelect({
 
   // 獲取已選擇的選項標籤
   const getSelectedLabels = () => {
-    return Array.from(value)
+    return Array.from(selectedValues)
       .map(v => options.find(opt => opt.value === v)?.label)
       .filter(Boolean)
   }
@@ -74,7 +74,7 @@ export default function MultiSelect({
       >
         <div className="flex items-center justify-between">
           <span className="block truncate">
-            {value.size > 0 ? `已選擇 ${value.size} 項` : placeholder}
+            {selectedValues.size > 0 ? `已選擇 ${selectedValues.size} 項` : placeholder}
           </span>
           <ChevronDown
             className={`h-5 w-5 text-gray-400 transition-transform ${
@@ -104,7 +104,7 @@ export default function MultiSelect({
                   onClick={() => handleToggleOption(option.value)}
                 >
                   <span className="text-sm text-gray-700">{option.label}</span>
-                  {value.has(option.value) && (
+                  {selectedValues.has(option.value) && (
                     <Check className="h-4 w-4 text-green-600" />
                   )}
                 </button>
@@ -115,7 +115,7 @@ export default function MultiSelect({
       )}
 
       {/* 已選擇的標籤 */}
-      {value.size > 0 && (
+      {selectedValues.size > 0 && (
         <div className="flex flex-wrap gap-2 mt-2">
           {getSelectedLabels().map((label, index) => (
             <span
@@ -126,7 +126,7 @@ export default function MultiSelect({
               <button
                 onClick={(e) => {
                   e.stopPropagation()
-                  handleToggleOption(Array.from(value)[index])
+                  handleToggleOption(Array.from(selectedValues)[index])
                 }}
                 className="ml-1 hover:text-green-900"
               >

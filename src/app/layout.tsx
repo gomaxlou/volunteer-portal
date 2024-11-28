@@ -1,13 +1,13 @@
+import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import './globals.css'
-import ClientLayout from '@/components/layout/ClientLayout'
+import Header from '@/components/layout/Header'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Volunteer Portal',
-  description: 'A comprehensive platform for managing volunteer group activities',
+  title: '志工系統',
+  description: '志工活動管理系統',
 }
 
 export default function RootLayout({
@@ -18,10 +18,11 @@ export default function RootLayout({
   return (
     <html lang="zh-TW" suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
-        <div className="min-h-screen flex flex-col">
-          <ClientLayout>
+        <div className="flex flex-col min-h-screen">
+          <Header />
+          <main className="flex-grow bg-gray-50">
             {children}
-          </ClientLayout>
+          </main>
         </div>
       </body>
     </html>

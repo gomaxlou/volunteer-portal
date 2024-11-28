@@ -4,77 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>寶島志工服務團 - 系統使用手冊</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        
         body {
-            font-family: 'Microsoft JhengHei', sans-serif;
+            font-family: 'Noto Sans TC', sans-serif;
             line-height: 1.6;
             color: #333;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
         }
+
+        .list-circle {
+            list-style-type: circle;
+        }
+
         .header {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 2rem;
             text-align: center;
-            margin-bottom: 40px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
+            margin-bottom: 2rem;
         }
-        .section {
-            margin-bottom: 40px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
         }
-        h1 {
-            color: #2c5282;
-            margin-bottom: 20px;
+
+        .header p {
+            opacity: 0.9;
         }
-        h2 {
-            color: #2b6cb0;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
-            margin-top: 30px;
-        }
-        h3 {
-            color: #4a5568;
-            margin-top: 20px;
-        }
+
         img {
             max-width: 100%;
-            height: auto;
             border-radius: 8px;
-            margin: 20px 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin: 1rem 0;
         }
-        .feature-list {
-            list-style-type: none;
-            padding: 0;
-        }
-        .feature-list li {
-            margin-bottom: 10px;
-            padding-left: 20px;
-            position: relative;
-        }
-        .feature-list li:before {
-            content: "•";
-            color: #4299e1;
-            font-weight: bold;
-            position: absolute;
-            left: 0;
-        }
+
         .note {
-            background-color: #ebf8ff;
-            padding: 15px;
-            border-left: 4px solid #4299e1;
-            margin: 20px 0;
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
         }
-        code {
-            background-color: #f7fafc;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
+
+        @media print {
+            .header {
+                background: none;
+                color: #000;
+                padding: 1rem;
+            }
+
+            .note {
+                border: 1px solid #f59e0b;
+                break-inside: avoid;
+            }
+
+            img {
+                max-width: 500px;
+                break-inside: avoid;
+            }
         }
     </style>
 </head>
@@ -84,77 +76,226 @@
         <p>版本 1.0.0 | 最後更新：2024年1月</p>
     </div>
 
-    <div class="section">
-        <h2>系統概述</h2>
-        <p>寶島志工服務團管理系統是一個專為志工服務設計的綜合性平台，提供活動管理、報名系統、會議記錄等功能。本手冊將指導您如何使用系統的各項功能。</p>
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-8">團務報告系統使用手冊</h1>
         
-        <h3>主要功能</h3>
-        <ul class="feature-list">
-            <li>活動管理與報名</li>
-            <li>會議記錄管理</li>
-            <li>PDF 報告生成</li>
-            <li>志工時數統計</li>
-            <li>資源下載中心</li>
-        </ul>
-    </div>
-
-    <div class="section">
-        <h2>團務報告系統</h2>
-        <p>團務報告系統提供了完整的會議記錄管理功能，包括查看、搜尋、下載等功能。</p>
-
-        <h3>基本操作</h3>
-        <ol>
-            <li>
-                <h4>進入報告頁面</h4>
-                <p>點擊導航欄的「團務報告」進入系統。</p>
-                <img src="/docs/images/reports-page.png" alt="團務報告頁面">
-            </li>
-            <li>
-                <h4>查看會議記錄</h4>
-                <p>在左側列表中選擇想要查看的會議記錄，內容會顯示在右側區域。</p>
-                <img src="/docs/images/view-report.png" alt="查看會議記錄">
-            </li>
-            <li>
-                <h4>搜尋功能</h4>
-                <p>使用頁面上方的搜尋框，可以搜尋特定的會議記錄。系統支持以下搜尋條件：</p>
-                <ul>
-                    <li>會議標題</li>
-                    <li>會議日期</li>
-                    <li>會議內容</li>
+        <div class="mb-12">
+            <h2 class="text-2xl font-semibold mb-4">系統概述</h2>
+            <p class="mb-4">團務報告系統是一個專為志工團隊設計的會議記錄管理平台。本系統提供直觀的介面，方便使用者查看、搜尋和下載會議記錄。</p>
+            <div class="bg-blue-50 p-4 rounded-lg">
+                <h3 class="text-lg font-semibold mb-2">主要功能：</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li>會議記錄瀏覽與搜尋</li>
+                    <li>PDF 格式下載</li>
+                    <li>中文（繁體）完整支援</li>
+                    <li>響應式設計，支援各種設備</li>
                 </ul>
-                <img src="/docs/images/search-function.png" alt="搜尋功能">
-            </li>
-            <li>
-                <h4>下載 PDF</h4>
-                <p>選擇會議記錄後，點擊右上角的下載按鈕即可下載 PDF 格式的會議記錄。</p>
-                <img src="/docs/images/download-pdf.png" alt="下載 PDF">
-            </li>
-        </ol>
-
-        <div class="note">
-            <strong>注意：</strong>PDF 文件支援中文顯示，使用 NotoSansTC 字型，確保所有內容都能正確呈現。
+            </div>
         </div>
-    </div>
 
-    <div class="section">
-        <h2>常見問題解答</h2>
-        <h3>Q: 如何搜尋特定日期的會議記錄？</h3>
-        <p>A: 在搜尋框中輸入日期（格式：YYYY-MM-DD）即可搜尋特定日期的會議記錄。</p>
+        <div class="mb-12">
+            <h2 class="text-2xl font-semibold mb-4">使用指南</h2>
+            
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-3">1. 瀏覽會議記錄</h3>
+                <div class="pl-4">
+                    <p class="mb-2">在左側面板中，您可以看到所有會議記錄的列表：</p>
+                    <ul class="list-disc list-inside mb-4">
+                        <li>依時間順序排列，最新的會議記錄顯示在最上方</li>
+                        <li>每個項目顯示會議標題和日期</li>
+                        <li>點擊任何會議項目，右側會顯示詳細內容</li>
+                    </ul>
+                    <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                        <p class="text-sm text-gray-600">提示：使用滾輪或觸控板可以快速瀏覽長列表</p>
+                    </div>
+                </div>
+            </div>
 
-        <h3>Q: PDF 檔案無法正確顯示中文怎麼辦？</h3>
-        <p>A: 請確保您的系統已正確安裝字型。如果問題持續，請重新整理頁面後再試。</p>
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-3">2. 搜尋功能</h3>
+                <div class="pl-4">
+                    <p class="mb-2">系統提供強大的搜尋功能，可以快速找到需要的會議記錄：</p>
+                    <ul class="list-disc list-inside mb-4">
+                        <li>在頂部搜尋框輸入關鍵字</li>
+                        <li>支援多個關鍵字組合搜尋</li>
+                        <li>可搜尋範圍：
+                            <ul class="list-circle list-inside ml-4">
+                                <li>會議標題</li>
+                                <li>會議日期</li>
+                                <li>會議內容</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                        <p class="font-semibold mb-2">搜尋技巧：</p>
+                        <ul class="list-disc list-inside">
+                            <li>使用空格分隔多個關鍵字</li>
+                            <li>搜尋結果會即時顯示</li>
+                            <li>系統會自動標記符合的內容</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
-        <h3>Q: 可以一次下載多份會議記錄嗎？</h3>
-        <p>A: 目前系統僅支援單份會議記錄的下載。多份下載功能將在未來版本中推出。</p>
-    </div>
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-3">3. PDF 下載</h3>
+                <div class="pl-4">
+                    <p class="mb-2">系統支援將會議記錄轉換為 PDF 格式下載：</p>
+                    <ul class="list-disc list-inside mb-4">
+                        <li>點擊右上角的「下載 PDF」按鈕</li>
+                        <li>系統會自動生成包含完整會議內容的 PDF 文件</li>
+                        <li>PDF 文件包含：
+                            <ul class="list-circle list-inside ml-4">
+                                <li>會議標題和日期</li>
+                                <li>完整會議內容</li>
+                                <li>格式化的段落和標題</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="bg-yellow-50 p-4 rounded-lg mb-4">
+                        <p class="font-semibold text-yellow-800">注意事項：</p>
+                        <ul class="list-disc list-inside text-yellow-700">
+                            <li>PDF 生成可能需要幾秒鐘時間</li>
+                            <li>請確保瀏覽器允許下載檔案</li>
+                            <li>建議使用最新版本的瀏覽器</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <div class="section">
-        <h2>聯絡支援</h2>
-        <p>如果您在使用過程中遇到任何問題，或有任何建議，請聯繫系統管理員：</p>
-        <ul>
-            <li>Email: support@volunteer-portal.org</li>
-            <li>服務時間：週一至週五 9:00-18:00</li>
-        </ul>
+        <div class="mb-12">
+            <h2 class="text-2xl font-semibold mb-4">登入系統</h2>
+            
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-3">1. 登入頁面</h3>
+                <div class="pl-4">
+                    <p class="mb-2">系統採用帳號密碼認證方式：</p>
+                    <ul class="list-disc list-inside mb-4">
+                        <li>在登入頁面輸入您的帳號和密碼</li>
+                        <li>系統會驗證您的身份</li>
+                        <li>登入成功後會自動導向到團務報告頁面</li>
+                    </ul>
+                    <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                        <p class="font-semibold mb-2">登入說明：</p>
+                        <ul class="list-disc list-inside">
+                            <li>帳號和密碼區分大小寫</li>
+                            <li>如果忘記密碼，請聯絡系統管理員</li>
+                            <li>為了安全起見，請定期更換密碼</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-3">2. 登出功能</h3>
+                <div class="pl-4">
+                    <p class="mb-2">您可以透過以下方式登出系統：</p>
+                    <ul class="list-disc list-inside mb-4">
+                        <li>點擊頁面右上角的「登出」按鈕</li>
+                        <li>系統會清除您的登入狀態</li>
+                        <li>自動導回登入頁面</li>
+                    </ul>
+                    <div class="bg-yellow-50 p-4 rounded-lg mb-4">
+                        <p class="font-semibold text-yellow-800">安全提醒：</p>
+                        <ul class="list-disc list-inside text-yellow-700">
+                            <li>離開電腦時請記得登出</li>
+                            <li>不要在公共電腦上儲存密碼</li>
+                            <li>使用完畢請關閉瀏覽器</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold mb-3">3. 帳號安全</h3>
+                <div class="pl-4">
+                    <p class="mb-2">為了確保系統安全，請遵守以下準則：</p>
+                    <ul class="list-disc list-inside mb-4">
+                        <li>密碼長度至少 8 個字元</li>
+                        <li>密碼應包含英文字母和數字</li>
+                        <li>不要使用容易猜到的密碼</li>
+                        <li>不要與他人共享帳號</li>
+                    </ul>
+                    <div class="bg-red-50 p-4 rounded-lg mb-4">
+                        <p class="font-semibold text-red-800">重要提醒：</p>
+                        <ul class="list-disc list-inside text-red-700">
+                            <li>系統登入狀態會在 24 小時後自動過期</li>
+                            <li>請勿在不安全的網路環境登入</li>
+                            <li>如發現帳號異常請立即通知管理員</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-12">
+            <h2 class="text-2xl font-semibold mb-4">系統需求</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded-lg border">
+                    <h3 class="font-semibold mb-2">支援的瀏覽器</h3>
+                    <ul class="list-disc list-inside">
+                        <li>Google Chrome (推薦)</li>
+                        <li>Mozilla Firefox</li>
+                        <li>Microsoft Edge</li>
+                        <li>Safari</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-4 rounded-lg border">
+                    <h3 class="font-semibold mb-2">建議的螢幕解析度</h3>
+                    <ul class="list-disc list-inside">
+                        <li>桌面：1920 x 1080 或更高</li>
+                        <li>平板：1024 x 768 或更高</li>
+                        <li>手機：支援任何解析度</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-12">
+            <h2 class="text-2xl font-semibold mb-4">常見問題</h2>
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded-lg border">
+                    <h3 class="font-semibold mb-2">Q: 為什麼我的搜尋沒有結果？</h3>
+                    <p>A: 請確認：</p>
+                    <ul class="list-disc list-inside">
+                        <li>檢查關鍵字拼寫是否正確</li>
+                        <li>嘗試使用較短或較常見的關鍵字</li>
+                        <li>確保沒有輸入特殊符號</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-4 rounded-lg border">
+                    <h3 class="font-semibold mb-2">Q: PDF 下載失敗怎麼辦？</h3>
+                    <p>A: 可以嘗試以下解決方案：</p>
+                    <ul class="list-disc list-inside">
+                        <li>確認網路連線穩定</li>
+                        <li>重新整理頁面後再試</li>
+                        <li>檢查瀏覽器是否封鎖下載</li>
+                        <li>使用其他支援的瀏覽器</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-4 rounded-lg border">
+                    <h3 class="font-semibold mb-2">Q: 系統支援哪些語言？</h3>
+                    <p>A: 目前系統支援：</p>
+                    <ul class="list-disc list-inside">
+                        <li>繁體中文（預設）</li>
+                        <li>所有 PDF 內容皆支援中文字型</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-12">
+            <h2 class="text-2xl font-semibold mb-4">聯絡支援</h2>
+            <div class="bg-green-50 p-6 rounded-lg">
+                <p class="mb-4">如果您在使用過程中遇到任何問題，或有功能改善建議，請聯絡系統管理員：</p>
+                <ul class="list-disc list-inside space-y-2">
+                    <li>填寫系統回饋表</li>
+                    <li>向團務組組長反應</li>
+                    <li>在週會中提出建議</li>
+                </ul>
+            </div>
+        </div>
     </div>
 </body>
 </html>

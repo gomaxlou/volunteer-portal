@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寶島志工服務團 - 功能流程說明文件</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .flow-diagram {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .flow-step {
+            position: relative;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-left: 4px solid #3b82f6;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .flow-step::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            width: 16px;
+            height: 16px;
+            background: #3b82f6;
+            border-radius: 50%;
+            transform: translateY(-50%);
+        }
+
+        .code-block {
+            background: #1a1a1a;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: monospace;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .api-endpoint {
+            background: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .database-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .database-table th,
+        .database-table td {
+            border: 1px solid #e2e8f0;
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        .database-table th {
+            background: #f1f5f9;
+        }
+
+        .collapsible {
+            cursor: pointer;
+        }
+
+        .content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .content.active {
+            max-height: 1000px;
+        }
+
+        @media print {
+            .flow-diagram {
+                break-inside: avoid;
+            }
+            
+            .flow-step {
+                break-inside: avoid;
+            }
+            
+            .code-block {
+                break-inside: avoid;
+                background: #f8fafc;
+                color: #333;
+                border: 1px solid #e2e8f0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-8">功能流程說明文件</h1>
+        <p class="text-gray-600 mb-8">版本 1.0.0 | 最後更新：2024年1月</p>
+
+        <!-- 目錄 -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-semibold mb-4">目錄</h2>
+            <ul class="space-y-2">
+                <li><a href="#auth" class="text-blue-600 hover:underline">1. 認證系統</a></li>
+                <li><a href="#events" class="text-blue-600 hover:underline">2. 活動管理</a></li>
+                <li><a href="#database" class="text-blue-600 hover:underline">3. 資料庫結構</a></li>
+                <li><a href="#api" class="text-blue-600 hover:underline">4. API 端點</a></li>
+                <li><a href="#debug" class="text-blue-600 hover:underline">5. 除錯指南</a></li>
+            </ul>
+        </div>
+
+        <!-- 認證系統 -->
+        <section id="auth" class="mb-12">
+            <h2 class="text-2xl font-semibold mb-4">1. 認證系統</h2>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <h3 class="font-semibold">JWT 認證流程</h3>
+                    <p>使用 JWT (JSON Web Token) 進行使用者認證</p>
+                    <button class="collapsible bg-blue-100 px-3 py-1 rounded mt-2">查看詳細流程</button>
+                    <div class="content">
+                        <ol class="list-decimal list-inside mt-4 space-y-2">
+                            <li>使用者提交登入表單</li>
+                            <li>後端驗證帳號密碼</li>
+                            <li>生成 JWT Token</li>
+                            <li>回傳 Token 給前端</li>
+                            <li>前端儲存 Token 在 localStorage</li>
+                            <li>後續請求帶上 Token</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <h3 class="font-semibold">角色權限控制</h3>
+                    <p>系統實作 RBAC (Role-Based Access Control)</p>
+                    <div class="code-block">
+                        <pre>
+// 權限檢查中間件
+export async function withAuth(
+    handler: NextApiHandler,
+    requiredRole?: string
+) {
+    return async (req: NextApiRequest, res: NextApiResponse) => {
+        try {
+            const token = req.headers.authorization?.split(' ')[1];
+            if (!token) throw new Error('未授權的存取');
+            
+            const decoded = verifyToken(token);
+            if (requiredRole && decoded.role !== requiredRole) {
+                throw new Error('權限不足');
+            }
+            
+            return handler(req, res);
+        } catch (error) {
+            return res.status(401).json({ error: '認證失敗' });
+        }
+    };
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 活動管理 -->
+        <section id="events" class="mb-12">
+            <h2 class="text-2xl font-semibold mb-4">2. 活動管理</h2>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <h3 class="font-semibold">活動建立流程</h3>
+                    <button class="collapsible bg-blue-100 px-3 py-1 rounded mt-2">查看詳細流程</button>
+                    <div class="content">
+                        <ol class="list-decimal list-inside mt-4 space-y-2">
+                            <li>前端表單驗證
+                                <ul class="list-disc list-inside ml-4">
+                                    <li>必填欄位檢查</li>
+                                    <li>日期格式驗證</li>
+                                    <li>數值範圍檢查</li>
+                                </ul>
+                            </li>
+                            <li>圖片上傳處理
+                                <ul class="list-disc list-inside ml-4">
+                                    <li>檔案大小限制</li>
+                                    <li>格式驗證</li>
+                                    <li>儲存至伺服器</li>
+                                </ul>
+                            </li>
+                            <li>資料庫操作
+                                <ul class="list-disc list-inside ml-4">
+                                    <li>資料正規化</li>
+                                    <li>交易處理</li>
+                                    <li>錯誤處理</li>
+                                </ul>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <h3 class="font-semibold">資料轉換處理</h3>
+                    <div class="code-block">
+                        <pre>
+// 資料轉換工具函數
+export const stringArrayToJson = (arr: string[] | null): string => {
+    return arr ? JSON.stringify(arr) : '[]';
+};
+
+export const jsonToStringArray = (json: string | null): string[] => {
+    try {
+        return json ? JSON.parse(json) : [];
+    } catch {
+        return [];
+    }
+};</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 資料庫結構 -->
+        <section id="database" class="mb-12">
+            <h2 class="text-2xl font-semibold mb-4">3. 資料庫結構</h2>
+            <div class="flow-diagram">
+                <h3 class="font-semibold mb-4">Events 表格結構</h3>
+                <table class="database-table">
+                    <thead>
+                        <tr>
+                            <th>欄位名稱</th>
+                            <th>資料類型</th>
+                            <th>可為空</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>id</td>
+                            <td>INTEGER</td>
+                            <td>否</td>
+                            <td>主鍵，自動遞增</td>
+                        </tr>
+                        <tr>
+                            <td>title</td>
+                            <td>TEXT</td>
+                            <td>否</td>
+                            <td>活動標題</td>
+                        </tr>
+                        <tr>
+                            <td>description</td>
+                            <td>TEXT</td>
+                            <td>是</td>
+                            <td>活動描述</td>
+                        </tr>
+                        <tr>
+                            <td>requirements</td>
+                            <td>TEXT</td>
+                            <td>是</td>
+                            <td>JSON 格式的需求清單</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- API 端點 -->
+        <section id="api" class="mb-12">
+            <h2 class="text-2xl font-semibold mb-4">4. API 端點</h2>
+            <div class="flow-diagram">
+                <div class="api-endpoint">
+                    <h3 class="font-semibold">POST /api/events</h3>
+                    <p class="text-sm text-gray-600">建立新活動</p>
+                    <button class="collapsible bg-blue-100 px-3 py-1 rounded mt-2">查看詳細資訊</button>
+                    <div class="content">
+                        <div class="mt-4">
+                            <h4 class="font-semibold">請求格式：</h4>
+                            <div class="code-block">
+                                <pre>
+{
+    "title": string,
+    "startDate": string,
+    "endDate": string,
+    "location": string,
+    "maxParticipants": number,
+    "registrationDeadline": string,
+    "projectManagerName": string,
+    "projectManagerEmail": string,
+    "projectManagerPhone": string
+}</pre>
+                            </div>
+                            <h4 class="font-semibold mt-4">回應格式：</h4>
+                            <div class="code-block">
+                                <pre>
+{
+    "id": number,
+    "title": string,
+    "createdAt": string
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 除錯指南 -->
+        <section id="debug" class="mb-12">
+            <h2 class="text-2xl font-semibold mb-4">5. 除錯指南</h2>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <h3 class="font-semibold">常見錯誤處理</h3>
+                    <button class="collapsible bg-blue-100 px-3 py-1 rounded mt-2">查看詳細資訊</button>
+                    <div class="content">
+                        <ul class="list-disc list-inside mt-4 space-y-2">
+                            <li>資料庫連線錯誤
+                                <ul class="list-circle list-inside ml-4">
+                                    <li>檢查資料庫檔案權限</li>
+                                    <li>確認 SQLite 檔案路徑</li>
+                                    <li>檢查資料庫是否被鎖定</li>
+                                </ul>
+                            </li>
+                            <li>認證錯誤
+                                <ul class="list-circle list-inside ml-4">
+                                    <li>檢查 Token 是否過期</li>
+                                    <li>確認使用者權限</li>
+                                    <li>驗證 Token 格式</li>
+                                </ul>
+                            </li>
+                            <li>資料驗證錯誤
+                                <ul class="list-circle list-inside ml-4">
+                                    <li>檢查必填欄位</li>
+                                    <li>驗證日期格式</li>
+                                    <li>確認數值範圍</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const collapsibles = document.querySelectorAll('.collapsible');
+            
+            collapsibles.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.classList.toggle('bg-blue-200');
+                    const content = this.nextElementSibling;
+                    content.classList.toggle('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

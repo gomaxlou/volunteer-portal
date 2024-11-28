@@ -1,51 +1,43 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 設置圖片來源白名單
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'picsum.photos',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-        pathname: '/**',
-      },
-    ],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [16, 32, 64, 96, 128, 256],
     domains: ['localhost'],
   },
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
-  },
-  poweredByHeader: false,
-  compress: true,
+  // 允許上傳檔案
   async headers() {
     return [
       {
-        source: '/api/:path*',
+        source: '/api/upload',
         headers: [
           {
-            key: 'Access-Control-Allow-Credentials',
-            value: 'true',
-          },
-          {
             key: 'Access-Control-Allow-Origin',
-            value: 'http://localhost:3000',
+            value: '*',
           },
           {
             key: 'Access-Control-Allow-Methods',
-            value: 'GET,DELETE,PATCH,POST,PUT',
+            value: 'POST, OPTIONS',
           },
           {
             key: 'Access-Control-Allow-Headers',
-            value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
+            value: 'Content-Type',
           },
         ],
       },
-    ];
+    ]
+  },
+  // 配置 webpack 以支援 better-sqlite3
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        crypto: false,
+      }
+    }
+    config.externals = [...config.externals, 'better-sqlite3']
+    return config
   },
 }
 

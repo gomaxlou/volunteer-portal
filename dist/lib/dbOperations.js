@@ -48,51 +48,82 @@ class EventOperations {
     // 新增活動
     create(event) {
         const db = (0, db_1.getDb)();
-        const stmt = db.prepare(`
-            INSERT INTO events (
-                id, title, startDate, endDate, location, description,
-                image, participants, maxParticipants, registrationDeadline,
-                projectManager, details
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `);
-        const result = stmt.run(event.id, event.title, event.startDate, event.endDate, event.location, event.description, event.image, event.participants || 0, event.maxParticipants, event.registrationDeadline, JSON.stringify(event.projectManager), JSON.stringify(event.details));
-        db.close();
-        return result.lastInsertRowid;
+        try {
+            const stmt = db.prepare(`
+                INSERT INTO events (
+                    id, title, startDate, endDate, location, description,
+                    image, participants, maxParticipants, registrationDeadline,
+                    projectManager, details
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `);
+            const result = stmt.run(event.id, event.title, event.startDate, event.endDate, event.location, event.description, event.image, event.participants || 0, event.maxParticipants, event.registrationDeadline, JSON.stringify(event.projectManager), JSON.stringify(event.details));
+            return result.lastInsertRowid;
+        }
+        finally {
+            db.close();
+        }
     }
     // 取得所有活動
     getAll() {
         const db = (0, db_1.getDb)();
-        const events = db.prepare('SELECT * FROM events').all();
-        db.close();
-        return events.map((event) => ({
-            ...event,
-            projectManager: JSON.parse(event.projectManager || '{}'),
-            details: JSON.parse(event.details || '{}')
-        }));
+        try {
+            const events = db.prepare('SELECT * FROM events').all();
+            return events.map((event) => ({
+                ...event,
+                projectManager: JSON.parse(event.projectManager || '{}'),
+                details: JSON.parse(event.details || '{}')
+            }));
+        }
+        finally {
+            db.close();
+        }
     }
     // 根據 ID 取得活動
     getById(id) {
         const db = (0, db_1.getDb)();
-        const event = db.prepare('SELECT * FROM events WHERE id = ?').get(id);
-        db.close();
-        return event ? {
-            ...event,
-            projectManager: JSON.parse(event.projectManager || '{}'),
-            details: JSON.parse(event.details || '{}')
-        } : null;
+        try {
+            const event = db.prepare('SELECT * FROM events WHERE id = ?').get(id);
+            return event ? {
+                ...event,
+                projectManager: JSON.parse(event.projectManager || '{}'),
+                details: JSON.parse(event.details || '{}')
+            } : null;
+        }
+        finally {
+            db.close();
+        }
     }
     // 更新活動參與人數
     updateParticipants(id, count) {
         const db = (0, db_1.getDb)();
-        const stmt = db.prepare(`
-            UPDATE events 
-            SET participants = ?
-            WHERE id = ?
-        `);
-        const result = stmt.run(count, id);
-        db.close();
-        return result.changes > 0;
+        try {
+            const stmt = db.prepare(`
+                UPDATE events 
+                SET participants = ?
+                WHERE id = ?
+            `);
+            const result = stmt.run(count, id);
+            return result.changes > 0;
+        }
+        finally {
+            db.close();
+        }
+    }
+    // 刪除活動
+    delete(id) {
+        const db = (0, db_1.getDb)();
+        try {
+            const result = db.prepare('DELETE FROM events WHERE id = ?').run(id);
+            return result.changes > 0;
+        }
+        catch (error) {
+            console.error('Delete event error:', error);
+            return false;
+        }
+        finally {
+            db.close();
+        }
     }
 }
 class UserEventOperations {

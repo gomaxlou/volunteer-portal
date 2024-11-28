@@ -1,4 +1,4 @@
-import { getDb } from './db';
+import { db } from './db/db';
 import { compare, hash } from 'bcryptjs';
 
 export interface User {
@@ -22,7 +22,6 @@ export interface UserRegistration extends Omit<User, 'id' | 'role'> {
 export const authOperations = {
   // 驗證用戶登入
   async verifyUser(username: string, password: string) {
-    const db = getDb();
     try {
       const user = db.prepare(
         'SELECT * FROM users WHERE username = ?'
@@ -40,58 +39,43 @@ export const authOperations = {
       // 不返回密碼
       const { password: _, ...userWithoutPassword } = user;
       return userWithoutPassword;
-    } finally {
-      db.close();
+    } catch (error) {
+      console.error('驗證用戶失敗:', error);
+      throw error;
     }
   },
 
   // 註冊新用戶
   async registerUser(userData: UserRegistration) {
-    const db = getDb();
     try {
-      // 檢查用戶名是否已存在
-      const existingUser = db.prepare(
-        'SELECT username FROM users WHERE username = ? OR email = ? OR id_number = ?'
-      ).get(userData.username, userData.email, userData.id_number);
-
-      if (existingUser) {
-        throw new Error('用戶名、電子郵件或身份證字號已被使用');
-      }
-
-      // 加密密碼
       const hashedPassword = await hash(userData.password, 10);
 
-      // 插入新用戶
       const result = db.prepare(`
         INSERT INTO users (
           chinese_name, english_name, username, password, 
-          email, gender, birthday, phone, 
-          id_number, skills, role
+          email, gender, birthday, phone, id_number, skills
         ) VALUES (
-          ?, ?, ?, ?, 
-          ?, ?, ?, ?, 
-          ?, ?, 'user'
+          @chinese_name, @english_name, @username, @password,
+          @email, @gender, @birthday, @phone, @id_number, @skills
         )
-      `).run(
-        userData.chinese_name,
-        userData.english_name || null,
-        userData.username,
-        hashedPassword,
-        userData.email,
-        userData.gender,
-        userData.birthday,
-        userData.phone,
-        userData.id_number,
-        userData.skills || null
-      );
+      `).run({
+        ...userData,
+        password: hashedPassword
+      });
 
-      if (result.changes === 0) {
+      if (!result.lastInsertRowid) {
         throw new Error('註冊失敗');
       }
 
-      return { success: true };
-    } finally {
-      db.close();
+      const user = db.prepare(
+        'SELECT * FROM users WHERE id = ?'
+      ).get(result.lastInsertRowid);
+
+      const { password: _, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    } catch (error) {
+      console.error('註冊用戶失敗:', error);
+      throw error;
     }
   }
 };

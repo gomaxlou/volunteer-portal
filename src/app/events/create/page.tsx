@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button, TextField, TextareaAutosize, Snackbar, Alert } from '@mui/material'
+import { Button, TextField, Snackbar, Alert } from '@mui/material'
 import { checkAuth, type UserInfo } from '@/lib/auth'
 
 interface EventFormData {
@@ -10,19 +10,25 @@ interface EventFormData {
   startDate: string;
   endDate: string;
   location: string;
-  description: string;
+  description?: string;
+  image?: string;
   maxParticipants: number;
   registrationDeadline: string;
-  image?: string;
-  projectManager: {
-    name: string;
-    email: string;
-    phone: string;
-  };
-  details: {
-    requirements: string[];
-    notes: string[];
-  };
+  projectManagerName: string;
+  projectManagerTitle?: string;
+  projectManagerEmail: string;
+  projectManagerPhone: string;
+  projectManagerLine?: string;
+  category?: string;
+  difficulty?: string;
+  requirements?: string[];
+  benefits?: string[];
+  items?: string[];
+  notes?: string[];
+  transportation?: string;
+  meetingPoint?: string;
+  schedule?: string;
+  status?: string;
 }
 
 export default function CreateEventPage() {
@@ -30,6 +36,26 @@ export default function CreateEventPage() {
   const [loading, setLoading] = useState(false)
   const [isAuthorized, setIsAuthorized] = useState(false)
   const [user, setUser] = useState<UserInfo | null>(null)
+  const [errors, setErrors] = useState<{
+    title?: string;
+    startDate?: string;
+    endDate?: string;
+    location?: string;
+    description?: string;
+    maxParticipants?: string;
+    registrationDeadline?: string;
+    image?: string;
+    projectManagerName?: string;
+    projectManagerEmail?: string;
+    projectManagerPhone?: string;
+    projectManagerTitle?: string;
+    projectManagerLine?: string;
+    category?: string;
+    difficulty?: string;
+    transportation?: string;
+    meetingPoint?: string;
+    schedule?: string;
+  }>({});
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -57,16 +83,14 @@ export default function CreateEventPage() {
     const checkAuthStatus = async () => {
       try {
         const userData = await checkAuth();
-        setUser(userData);
-        
         if (!userData || userData.role !== 'admin') {
           showMessage('請先登入管理員帳號', 'error');
           router.push('/login');
           return;
         }
         setIsAuthorized(true);
+        setUser(userData);
       } catch (error) {
-        console.error('Auth check error:', error);
         showMessage('系統錯誤，請稍後再試', 'error');
         router.push('/login');
       }
@@ -75,21 +99,111 @@ export default function CreateEventPage() {
     checkAuthStatus();
   }, [router]);
 
+  // 如果未授權，顯示載入中或返回 null
+  if (!isAuthorized || !user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="text-lg mb-2">檢查授權中...</div>
+          <div className="text-sm text-gray-500">請稍候</div>
+        </div>
+      </div>
+    );
+  }
+
+  const validateForm = (formData: FormData): boolean => {
+    const newErrors: any = {};
+    
+    // 驗證必填欄位
+    const requiredFields = [
+      'title', 
+      'location', 
+      'description', 
+      'projectManagerName', 
+      'projectManagerEmail', 
+      'projectManagerPhone',
+      'maxParticipants',
+      'startDate',
+      'endDate',
+      'registrationDeadline'
+    ];
+    requiredFields.forEach(field => {
+      if (!formData.get(field)) {
+        newErrors[field] = '此欄位為必填';
+      }
+    });
+
+    // 驗證日期
+    const startDate = new Date(formData.get('startDate') as string);
+    const endDate = new Date(formData.get('endDate') as string);
+    const registrationDeadline = new Date(formData.get('registrationDeadline') as string);
+    const now = new Date();
+
+    if (registrationDeadline < now) {
+      newErrors.registrationDeadline = '報名截止日期不能早於現在';
+    }
+    if (startDate < now) {
+      newErrors.startDate = '開始日期不能早於現在';
+    }
+    if (endDate < startDate) {
+      newErrors.endDate = '結束日期不能早於開始日期';
+    }
+    if (registrationDeadline > startDate) {
+      newErrors.registrationDeadline = '報名截止日期必須早於活動開始日期';
+    }
+
+    // 驗證參與人數
+    const maxParticipants = parseInt(formData.get('maxParticipants') as string);
+    if (isNaN(maxParticipants) || maxParticipants < 1) {
+      newErrors.maxParticipants = '請輸入有效的參與人數（至少1人）';
+    }
+
+    // 驗證 Email 格式
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const projectManagerEmail = formData.get('projectManagerEmail') as string;
+    if (projectManagerEmail && !emailRegex.test(projectManagerEmail)) {
+      newErrors.projectManagerEmail = '請輸入有效的 Email 格式';
+    }
+
+    // 驗證電話格式
+    const phoneRegex = /^[0-9+\-() ]{8,}$/;
+    const projectManagerPhone = formData.get('projectManagerPhone') as string;
+    if (projectManagerPhone && !phoneRegex.test(projectManagerPhone)) {
+      newErrors.projectManagerPhone = '請輸入有效的電話號碼';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!isAuthorized || !user) {
-      showMessage('請先登入管理員帳號', 'error');
+    e.preventDefault();
+    
+    // 獲取表單數據
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    // 重新檢查登入狀態
+    const currentUser = await checkAuth();
+    if (!currentUser || currentUser.role !== 'admin') {
+      showMessage('登入已過期，請重新登入', 'error');
+      setIsAuthorized(false);
+      setUser(null);
       router.push('/login');
       return;
     }
-    setLoading(true)
+
+    if (!validateForm(formData)) {
+      showMessage('請修正表單中的錯誤', 'error');
+      return;
+    }
+
+    setLoading(true);
 
     try {
-      const formData = new FormData(e.currentTarget)
-      
       // Handle image upload first
-      const imageFile = (e.currentTarget.querySelector('input[type="file"]') as HTMLInputElement).files?.[0];
-      let imageUrl = formData.get('image') as string;
+      const imageFile = (form.querySelector('input[type="file"]') as HTMLInputElement).files?.[0];
+      let imageUrl = '/images/default-event.jpg';  // 設定預設圖片
       
       if (imageFile) {
         const uploadData = new FormData();
@@ -98,7 +212,16 @@ export default function CreateEventPage() {
         const uploadResponse = await fetch('/api/upload', {
           method: 'POST',
           body: uploadData,
+          credentials: 'include'
         });
+
+        if (uploadResponse.status === 401) {
+          showMessage('登入已過期，請重新登入', 'error');
+          setIsAuthorized(false);
+          setUser(null);
+          router.push('/login');
+          return;
+        }
 
         if (!uploadResponse.ok) {
           const error = await uploadResponse.json();
@@ -109,49 +232,30 @@ export default function CreateEventPage() {
         imageUrl = url;
       }
 
-      // 驗證日期
-      const startDate = new Date(formData.get('startDate') as string);
-      const endDate = new Date(formData.get('endDate') as string);
-      const registrationDeadline = new Date(formData.get('registrationDeadline') as string);
-      const now = new Date();
-
-      if (registrationDeadline < now) {
-        throw new Error('報名截止日期不能早於現在');
-      }
-      if (startDate < now) {
-        throw new Error('開始日期不能早於現在');
-      }
-      if (endDate < startDate) {
-        throw new Error('結束日期不能早於開始日期');
-      }
-      if (registrationDeadline > startDate) {
-        throw new Error('報名截止日期必須早於活動開始日期');
-      }
-
-      // 驗證參與人數
-      const maxParticipants = parseInt(formData.get('maxParticipants') as string);
-      if (isNaN(maxParticipants) || maxParticipants < 1) {
-        throw new Error('請輸入有效的參與人數');
-      }
-
       const eventData: EventFormData = {
         title: formData.get('title') as string,
         startDate: formData.get('startDate') as string,
         endDate: formData.get('endDate') as string,
         location: formData.get('location') as string,
         description: formData.get('description') as string,
-        maxParticipants,
+        maxParticipants: parseInt(formData.get('maxParticipants') as string),
         registrationDeadline: formData.get('registrationDeadline') as string,
-        image: imageUrl || '/images/default-event.jpg',
-        projectManager: {
-          name: formData.get('pmName') as string,
-          email: formData.get('pmEmail') as string,
-          phone: formData.get('pmPhone') as string
-        },
-        details: {
-          requirements: (formData.get('requirements') as string)?.split('\n').filter(Boolean) || [],
-          notes: (formData.get('notes') as string)?.split('\n').filter(Boolean) || []
-        }
+        image: imageUrl,  // 使用預設圖片或上傳的圖片URL
+        projectManagerName: formData.get('projectManagerName') as string,
+        projectManagerTitle: formData.get('projectManagerTitle') as string,
+        projectManagerEmail: formData.get('projectManagerEmail') as string,
+        projectManagerPhone: formData.get('projectManagerPhone') as string,
+        projectManagerLine: formData.get('projectManagerLine') as string,
+        category: formData.get('category') as string,
+        difficulty: formData.get('difficulty') as string,
+        requirements: (formData.get('requirements') as string)?.split('\n').filter(Boolean) || [],
+        benefits: (formData.get('benefits') as string)?.split('\n').filter(Boolean) || [],
+        items: (formData.get('items') as string)?.split('\n').filter(Boolean) || [],
+        notes: (formData.get('notes') as string)?.split('\n').filter(Boolean) || [],
+        transportation: formData.get('transportation') as string,
+        meetingPoint: formData.get('meetingPoint') as string,
+        schedule: formData.get('schedule') as string,
+        status: 'active'
       }
 
       const response = await fetch('/api/events', {
@@ -163,6 +267,14 @@ export default function CreateEventPage() {
         body: JSON.stringify(eventData)
       })
 
+      if (response.status === 401) {
+        showMessage('登入已過期，請重新登入', 'error');
+        setIsAuthorized(false);
+        setUser(null);
+        router.push('/login');
+        return;
+      }
+
       if (!response.ok) {
         const error = await response.json()
         throw new Error(error.message || '新增活動失敗')
@@ -172,7 +284,6 @@ export default function CreateEventPage() {
       router.push('/events')
       router.refresh()
     } catch (error) {
-      console.error('Create event error:', error);
       showMessage(
         error instanceof Error ? error.message : '新增活動失敗',
         'error'
@@ -182,124 +293,115 @@ export default function CreateEventPage() {
     }
   }
 
-  if (!isAuthorized) {
-    return null;
-  }
-
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6">創建新活動</h1>
-      <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+      <h1 className="text-2xl font-bold mb-6">新增活動</h1>
+      
+      <Button
+        type="submit"
+        form="createEventForm"
+        disabled={loading}
+        variant="contained"
+        color="primary"
+        fullWidth
+        className="mb-6"
+      >
+        {loading ? '處理中...' : '新增活動'}
+      </Button>
+
+      <form id="createEventForm" onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+        {/* 基本資訊 */}
         <div>
-          <label htmlFor="title" className="block text-sm font-medium mb-1">
-            活動名稱 *
+          <label className="block text-sm font-medium mb-1">
+            活動名稱 <span className="text-red-500 font-bold">*</span>
           </label>
-          <TextField
-            id="title"
+          <input
+            type="text"
             name="title"
             required
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
             placeholder="請輸入活動名稱"
-            disabled={loading}
-            fullWidth
-            variant="outlined"
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="startDate" className="block text-sm font-medium mb-1">
-              開始日期 *
+            <label className="block text-sm font-medium mb-1">
+              開始日期 <span className="text-red-500 font-bold">*</span>
             </label>
-            <TextField
-              id="startDate"
-              name="startDate"
+            <input
               type="datetime-local"
+              name="startDate"
               required
-              disabled={loading}
-              fullWidth
-              variant="outlined"
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
-            <label htmlFor="endDate" className="block text-sm font-medium mb-1">
-              結束日期 *
+            <label className="block text-sm font-medium mb-1">
+              結束日期 <span className="text-red-500 font-bold">*</span>
             </label>
-            <TextField
-              id="endDate"
-              name="endDate"
+            <input
               type="datetime-local"
+              name="endDate"
               required
-              disabled={loading}
-              fullWidth
-              variant="outlined"
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="location" className="block text-sm font-medium mb-1">
-            地點 *
+          <label className="block text-sm font-medium mb-1">
+            地點 <span className="text-red-500 font-bold">*</span>
           </label>
-          <TextField
-            id="location"
+          <input
+            type="text"
             name="location"
             required
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
             placeholder="請輸入活動地點"
-            disabled={loading}
-            fullWidth
-            variant="outlined"
           />
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-medium mb-1">
-            活動描述 *
+          <label className="block text-sm font-medium mb-1">
+            活動描述 <span className="text-red-500 font-bold">*</span>
           </label>
-          <TextareaAutosize
-            id="description"
+          <textarea
             name="description"
             required
+            className="w-full p-2 border rounded h-32 focus:ring-2 focus:ring-blue-500"
             placeholder="請輸入活動描述"
-            minRows={4}
-            disabled={loading}
-            className="w-full p-2 border rounded-md"
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="maxParticipants" className="block text-sm font-medium mb-1">
-              最大參與人數 *
-            </label>
-            <TextField
-              id="maxParticipants"
-              name="maxParticipants"
-              type="number"
-              required
-              inputProps={{ min: "1" }}
-              disabled={loading}
-              fullWidth
-              variant="outlined"
-            />
-          </div>
-          <div>
-            <label htmlFor="registrationDeadline" className="block text-sm font-medium mb-1">
-              報名截止日期 *
-            </label>
-            <TextField
-              id="registrationDeadline"
-              name="registrationDeadline"
-              type="datetime-local"
-              required
-              disabled={loading}
-              fullWidth
-              variant="outlined"
-            />
-          </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            最大參與人數 <span className="text-red-500 font-bold">*</span>
+          </label>
+          <input
+            type="number"
+            name="maxParticipants"
+            required
+            min="1"
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            placeholder="請輸入最大參與人數"
+          />
         </div>
 
         <div>
-          <label htmlFor="image" className="block text-sm font-medium mb-1">
+          <label className="block text-sm font-medium mb-1">
+            報名截止日期 <span className="text-red-500 font-bold">*</span>
+          </label>
+          <input
+            type="datetime-local"
+            name="registrationDeadline"
+            required
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
             活動圖片
           </label>
           <div className="flex gap-4 items-start">
@@ -351,76 +453,169 @@ export default function CreateEventPage() {
         </div>
 
         <div>
-          <label htmlFor="pmName" className="block text-sm font-medium mb-1">
-            負責人姓名 *
+          <label className="block text-sm font-medium mb-1">
+            負責人姓名 <span className="text-red-500 font-bold">*</span>
           </label>
-          <TextField
-            id="pmName"
-            name="pmName"
+          <input
+            type="text"
+            name="projectManagerName"
             required
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
             placeholder="請輸入負責人姓名"
-            disabled={loading}
-            fullWidth
-            variant="outlined"
           />
         </div>
 
         <div>
-          <label htmlFor="pmEmail" className="block text-sm font-medium mb-1">
-            負責人Email *
+          <label className="block text-sm font-medium mb-1">
+            負責人職稱
           </label>
-          <TextField
-            id="pmEmail"
-            name="pmEmail"
+          <input
+            type="text"
+            name="projectManagerTitle"
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            placeholder="請輸入負責人職稱"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            負責人Email <span className="text-red-500 font-bold">*</span>
+          </label>
+          <input
             type="email"
+            name="projectManagerEmail"
             required
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
             placeholder="請輸入負責人Email"
-            disabled={loading}
-            fullWidth
-            variant="outlined"
           />
         </div>
 
         <div>
-          <label htmlFor="pmPhone" className="block text-sm font-medium mb-1">
-            負責人電話 *
+          <label className="block text-sm font-medium mb-1">
+            負責人電話 <span className="text-red-500 font-bold">*</span>
           </label>
-          <TextField
-            id="pmPhone"
-            name="pmPhone"
+          <input
+            type="text"
+            name="projectManagerPhone"
             required
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
             placeholder="請輸入負責人電話"
-            disabled={loading}
-            fullWidth
-            variant="outlined"
           />
         </div>
 
         <div>
-          <label htmlFor="requirements" className="block text-sm font-medium mb-1">
+          <label className="block text-sm font-medium mb-1">
+            負責人Line
+          </label>
+          <input
+            type="text"
+            name="projectManagerLine"
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            placeholder="請輸入負責人Line"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            活動類別
+          </label>
+          <input
+            type="text"
+            name="category"
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            placeholder="請輸入活動類別"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            活動難度
+          </label>
+          <input
+            type="text"
+            name="difficulty"
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            placeholder="請輸入活動難度"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
             參與要求
           </label>
-          <TextareaAutosize
-            id="requirements"
+          <textarea
             name="requirements"
+            className="w-full p-2 border rounded h-32 focus:ring-2 focus:ring-blue-500"
             placeholder="請輸入參與要求（每行一項）"
-            minRows={4}
-            disabled={loading}
-            className="w-full p-2 border rounded-md"
           />
         </div>
 
         <div>
-          <label htmlFor="notes" className="block text-sm font-medium mb-1">
+          <label className="block text-sm font-medium mb-1">
+            活動福利
+          </label>
+          <textarea
+            name="benefits"
+            className="w-full p-2 border rounded h-32 focus:ring-2 focus:ring-blue-500"
+            placeholder="請輸入活動福利（每行一項）"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            活動物品
+          </label>
+          <textarea
+            name="items"
+            className="w-full p-2 border rounded h-32 focus:ring-2 focus:ring-blue-500"
+            placeholder="請輸入活動物品（每行一項）"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
             注意事項
           </label>
-          <TextareaAutosize
-            id="notes"
+          <textarea
             name="notes"
+            className="w-full p-2 border rounded h-32 focus:ring-2 focus:ring-blue-500"
             placeholder="請輸入注意事項（每行一項）"
-            minRows={4}
-            disabled={loading}
-            className="w-full p-2 border rounded-md"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            交通資訊
+          </label>
+          <input
+            type="text"
+            name="transportation"
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            placeholder="請輸入交通資訊"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            集合地點
+          </label>
+          <input
+            type="text"
+            name="meetingPoint"
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            placeholder="請輸入集合地點"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            活動時間表
+          </label>
+          <input
+            type="text"
+            name="schedule"
+            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            placeholder="請輸入活動時間表"
           />
         </div>
 
@@ -430,8 +625,9 @@ export default function CreateEventPage() {
           variant="contained"
           color="primary"
           fullWidth
+          className="mt-6"
         >
-          {loading ? '處理中...' : '創建活動'}
+          {loading ? '處理中...' : '新增活動'}
         </Button>
       </form>
 

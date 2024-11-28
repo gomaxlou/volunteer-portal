@@ -46,6 +46,20 @@ export default function Header() {
     return () => clearInterval(interval);
   }, [searchParams]);
 
+  // 監聽認證狀態變化
+  useEffect(() => {
+    const handleAuthStateChange = (event: CustomEvent) => {
+      if (!event.detail.authenticated) {
+        setUser(null);
+      }
+    };
+
+    window.addEventListener('auth-state-changed', handleAuthStateChange as EventListener);
+    return () => {
+      window.removeEventListener('auth-state-changed', handleAuthStateChange as EventListener);
+    };
+  }, []);
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -56,6 +70,22 @@ export default function Header() {
       // 錯誤處理
     }
   };
+
+  // 定期檢查登入狀態
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      const userData = await checkAuth();
+      if (!userData && user) {
+        setUser(null);
+        router.push('/');
+        router.refresh();
+      }
+    };
+
+    // 每 5 分鐘檢查一次登入狀態
+    const interval = setInterval(checkAuthStatus, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [user, router]);
 
   // 點擊外部時關閉下拉選單
   useEffect(() => {

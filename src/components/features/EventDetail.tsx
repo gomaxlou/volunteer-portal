@@ -3,7 +3,7 @@
 import { Event } from '@/lib/types'
 import Image from 'next/image'
 import { useState } from 'react'
-import { CalendarDays, MapPin, Users, Clock, AlertTriangle } from 'lucide-react'
+import { CalendarDays, MapPin, Users, Clock, AlertTriangle, User } from 'lucide-react'
 
 interface EventDetailProps {
   event: Event
@@ -83,6 +83,12 @@ export default function EventDetail({ event }: EventDetailProps) {
                   <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
                     {event.details.category}
                   </span>
+                </div>
+              )}
+              {event.creatorName && (
+                <div className="flex items-center">
+                  <User className="w-5 h-5 mr-2" />
+                  <span>建立者：{event.creatorName}</span>
                 </div>
               )}
             </div>

@@ -1,61 +1,108 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { getUserFromCookie } from '@/lib/auth';
-import { Event, mockEvents } from '@/lib/mock-data';
+import type { UserInfo } from '@/lib/auth';
 
-interface EventFormData extends Omit<Event, 'id' | 'participants'> {
-  projectManager: {
-    name: string;
-    title: string;
-    phone: string;
-    email: string;
-    line?: string;
-  };
+interface EventFormData {
+  title: string;
+  startDate: string;
+  endDate: string;
+  location: string;
+  description?: string;
+  image?: string;
+  maxParticipants: number;
+  registrationDeadline: string;
+  projectManagerName: string;
+  projectManagerTitle?: string;
+  projectManagerEmail: string;
+  projectManagerPhone: string;
+  projectManagerLine?: string;
+  category?: string;
+  difficulty?: string;
+  requirements?: string[];
+  benefits?: string[];
+  items?: string[];
+  notes?: string[];
+  transportation?: string;
+  meetingPoint?: string;
+  schedule?: string;
+  status?: string;
 }
 
-export default function EditEventPage({ params }: { params: { id: string } }) {
+export default function EditEventPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
   const router = useRouter();
-  const user = getUserFromCookie();
+  const [user, setUser] = useState<UserInfo | null>(null);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<EventFormData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // 如果不是管理員，重定向到首頁
-  if (!user || user.role !== 'admin') {
-    router.push('/');
-    return null;
-  }
+  useEffect(() => {
+    // 檢查用戶權限
+    const checkUser = async () => {
+      console.log('Checking user authentication');
+      const userData = await getUserFromCookie();
+      console.log('User data:', userData);
+      
+      setUser(userData);
+      setIsLoading(false);
+      
+      if (!userData || userData.role !== 'admin') {
+        console.log('Unauthorized user, redirecting to home');
+        router.push('/');
+      }
+    };
+
+    checkUser();
+  }, [router]);
 
   useEffect(() => {
     // 獲取活動資料
     const fetchEvent = async () => {
+      console.log('Fetching event data for ID:', resolvedParams.id);
       try {
-        const response = await fetch(`/api/events/${params.id}`);
-        if (response.ok) {
-          const event = await response.json();
-          const { id, participants, ...eventData } = event;
-          setFormData(eventData);
-        } else {
-          setError('找不到活動');
-          router.push('/');
+        const response = await fetch(`/api/events/${resolvedParams.id}`);
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          
+          if (response.status === 401) {
+            console.log('Unauthorized, redirecting to login');
+            router.push('/login');
+            return;
+          }
+          throw new Error(errorText);
         }
+        
+        const event = await response.json();
+        console.log('Event data:', event);
+        setFormData(event);
       } catch (err) {
-        setError('載入活動資料失敗');
+        console.error('Error fetching event:', err);
+        setError('無法載入活動資料');
       }
     };
 
-    fetchEvent();
-  }, [params.id, router]);
+    if (!isLoading && user?.role === 'admin') {
+      console.log('User is admin, fetching event');
+      fetchEvent();
+    }
+  }, [resolvedParams.id, isLoading, user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    if (!formData) return;
+
     setIsSubmitting(true);
+    setError('');
 
     try {
-      const response = await fetch(`/api/events/${params.id}`, {
+      const response = await fetch(`/api/events/${resolvedParams.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -63,285 +110,364 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
         body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
-        router.push('/');
-      } else {
-        const data = await response.json();
-        setError(data.message || '更新活動失敗');
+      if (!response.ok) {
+        throw new Error(await response.text());
       }
+
+      router.push('/events');
     } catch (err) {
-      setError('系統錯誤，請稍後再試');
+      console.error('Error updating event:', err);
+      setError('更新活動失敗');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    if (!formData) return;
+
     const { name, value } = e.target;
-    if (name.startsWith('projectManager.')) {
-      const field = name.split('.')[1];
-      setFormData((prev) => prev ? ({
-        ...prev,
-        projectManager: {
-          ...prev.projectManager,
-          [field]: value,
-        },
-      }) : null);
-    } else {
-      setFormData((prev) => prev ? ({
+    setFormData(prev => {
+      if (!prev) return prev;
+      return {
         ...prev,
         [name]: value,
-      }) : null);
-    }
+      };
+    });
   };
 
+  if (isLoading) {
+    return <div>載入中...</div>;
+  }
+
+  if (!user || user.role !== 'admin') {
+    return null;
+  }
+
   if (!formData) {
-    return (
-      <div className="py-12 bg-gray-50 min-h-screen">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">載入中...</div>
-        </div>
-      </div>
-    );
+    return <div>載入活動資料中...</div>;
   }
 
   return (
-    <div className="py-12 bg-gray-50 min-h-screen">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow px-6 py-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-8">編輯活動</h1>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* 基本資訊 */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-medium text-gray-900">基本資訊</h2>
-              
-              <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                  活動名稱
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  id="title"
-                  required
-                  value={formData.title}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="date" className="block text-sm font-medium text-gray-700">
-                  活動日期
-                </label>
-                <input
-                  type="date"
-                  name="date"
-                  id="date"
-                  required
-                  value={formData.date}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="location" className="block text-sm font-medium text-gray-700">
-                  活動地點
-                </label>
-                <input
-                  type="text"
-                  name="location"
-                  id="location"
-                  required
-                  value={formData.location}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                  活動說明
-                </label>
-                <textarea
-                  name="description"
-                  id="description"
-                  required
-                  rows={4}
-                  value={formData.description}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="image" className="block text-sm font-medium text-gray-700">
-                  活動圖片網址
-                </label>
-                <input
-                  type="url"
-                  name="image"
-                  id="image"
-                  required
-                  value={formData.image}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                />
-              </div>
-            </div>
-
-            {/* 報名資訊 */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-medium text-gray-900">報名資訊</h2>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label htmlFor="maxParticipants" className="block text-sm font-medium text-gray-700">
-                    報名人數上限
-                  </label>
-                  <input
-                    type="number"
-                    name="maxParticipants"
-                    id="maxParticipants"
-                    required
-                    min="1"
-                    value={formData.maxParticipants}
-                    onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="registrationDeadline" className="block text-sm font-medium text-gray-700">
-                    報名截止日期
-                  </label>
-                  <input
-                    type="date"
-                    name="registrationDeadline"
-                    id="registrationDeadline"
-                    required
-                    value={formData.registrationDeadline}
-                    onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* 專案負責人資訊 */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-medium text-gray-900">專案負責人資訊</h2>
-
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label htmlFor="projectManager.name" className="block text-sm font-medium text-gray-700">
-                    姓名
-                  </label>
-                  <input
-                    type="text"
-                    name="projectManager.name"
-                    id="projectManager.name"
-                    required
-                    value={formData.projectManager.name}
-                    onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="projectManager.title" className="block text-sm font-medium text-gray-700">
-                    職稱
-                  </label>
-                  <input
-                    type="text"
-                    name="projectManager.title"
-                    id="projectManager.title"
-                    required
-                    value={formData.projectManager.title}
-                    onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="projectManager.phone" className="block text-sm font-medium text-gray-700">
-                    電話
-                  </label>
-                  <input
-                    type="tel"
-                    name="projectManager.phone"
-                    id="projectManager.phone"
-                    required
-                    value={formData.projectManager.phone}
-                    onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="projectManager.email" className="block text-sm font-medium text-gray-700">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="projectManager.email"
-                    id="projectManager.email"
-                    required
-                    value={formData.projectManager.email}
-                    onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="projectManager.line" className="block text-sm font-medium text-gray-700">
-                    LINE ID（選填）
-                  </label>
-                  <input
-                    type="text"
-                    name="projectManager.line"
-                    id="projectManager.line"
-                    value={formData.projectManager.line}
-                    onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {error && (
-              <div className="rounded-md bg-red-50 p-4">
-                <div className="flex">
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">{error}</h3>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="flex justify-end space-x-4">
-              <button
-                type="button"
-                onClick={() => router.back()}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-              >
-                取消
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
-              >
-                {isSubmitting ? '處理中...' : '更新活動'}
-              </button>
-            </div>
-          </form>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-6">編輯活動</h1>
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
         </div>
-      </div>
+      )}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block mb-2">活動名稱</label>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-2">開始日期</label>
+            <input
+              type="datetime-local"
+              name="startDate"
+              value={formData.startDate}
+              onChange={handleChange}
+              required
+              className="w-full p-2 border rounded"
+            />
+          </div>
+          <div>
+            <label className="block mb-2">結束日期</label>
+            <input
+              type="datetime-local"
+              name="endDate"
+              value={formData.endDate}
+              onChange={handleChange}
+              required
+              className="w-full p-2 border rounded"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block mb-2">地點</label>
+          <input
+            type="text"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2">活動描述</label>
+          <textarea
+            name="description"
+            value={formData.description || ''}
+            onChange={handleChange}
+            className="w-full p-2 border rounded h-32"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-2">最大參與人數</label>
+            <input
+              type="number"
+              name="maxParticipants"
+              value={formData.maxParticipants}
+              onChange={handleChange}
+              required
+              min="1"
+              className="w-full p-2 border rounded"
+            />
+          </div>
+          <div>
+            <label className="block mb-2">報名截止日期</label>
+            <input
+              type="datetime-local"
+              name="registrationDeadline"
+              value={formData.registrationDeadline}
+              onChange={handleChange}
+              required
+              className="w-full p-2 border rounded"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-2">專案經理姓名</label>
+            <input
+              type="text"
+              name="projectManagerName"
+              value={formData.projectManagerName}
+              onChange={handleChange}
+              required
+              className="w-full p-2 border rounded"
+            />
+          </div>
+          <div>
+            <label className="block mb-2">專案經理職稱</label>
+            <input
+              type="text"
+              name="projectManagerTitle"
+              value={formData.projectManagerTitle || ''}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-2">專案經理電話</label>
+            <input
+              type="tel"
+              name="projectManagerPhone"
+              value={formData.projectManagerPhone}
+              onChange={handleChange}
+              required
+              className="w-full p-2 border rounded"
+            />
+          </div>
+          <div>
+            <label className="block mb-2">專案經理 Email</label>
+            <input
+              type="email"
+              name="projectManagerEmail"
+              value={formData.projectManagerEmail}
+              onChange={handleChange}
+              required
+              className="w-full p-2 border rounded"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block mb-2">專案經理 LINE ID</label>
+          <input
+            type="text"
+            name="projectManagerLine"
+            value={formData.projectManagerLine || ''}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-2">活動類別</label>
+            <input
+              type="text"
+              name="category"
+              value={formData.category || ''}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+          <div>
+            <label className="block mb-2">難度等級</label>
+            <select
+              name="difficulty"
+              value={formData.difficulty || ''}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+            >
+              <option value="">請選擇</option>
+              <option value="easy">簡單</option>
+              <option value="medium">中等</option>
+              <option value="hard">困難</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="block mb-2">參與要求</label>
+          <textarea
+            name="requirements"
+            value={formData.requirements?.join('\n') || ''}
+            onChange={(e) => {
+              const requirements = e.target.value.split('\n').filter(Boolean);
+              setFormData(prev => {
+                if (!prev) return prev;
+                return {
+                  ...prev,
+                  requirements,
+                };
+              });
+            }}
+            className="w-full p-2 border rounded h-24"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2">參與效益</label>
+          <textarea
+            name="benefits"
+            value={formData.benefits?.join('\n') || ''}
+            onChange={(e) => {
+              const benefits = e.target.value.split('\n').filter(Boolean);
+              setFormData(prev => {
+                if (!prev) return prev;
+                return {
+                  ...prev,
+                  benefits,
+                };
+              });
+            }}
+            className="w-full p-2 border rounded h-24"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2">攜帶物品</label>
+          <textarea
+            name="items"
+            value={formData.items?.join('\n') || ''}
+            onChange={(e) => {
+              const items = e.target.value.split('\n').filter(Boolean);
+              setFormData(prev => {
+                if (!prev) return prev;
+                return {
+                  ...prev,
+                  items,
+                };
+              });
+            }}
+            className="w-full p-2 border rounded h-24"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2">注意事項</label>
+          <textarea
+            name="notes"
+            value={formData.notes?.join('\n') || ''}
+            onChange={(e) => {
+              const notes = e.target.value.split('\n').filter(Boolean);
+              setFormData(prev => {
+                if (!prev) return prev;
+                return {
+                  ...prev,
+                  notes,
+                };
+              });
+            }}
+            className="w-full p-2 border rounded h-24"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2">交通方式</label>
+          <textarea
+            name="transportation"
+            value={formData.transportation || ''}
+            onChange={handleChange}
+            className="w-full p-2 border rounded h-24"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2">集合地點</label>
+          <input
+            type="text"
+            name="meetingPoint"
+            value={formData.meetingPoint || ''}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2">活動流程</label>
+          <textarea
+            name="schedule"
+            value={formData.schedule || ''}
+            onChange={handleChange}
+            className="w-full p-2 border rounded h-32"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2">狀態</label>
+          <select
+            name="status"
+            value={formData.status || 'draft'}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          >
+            <option value="draft">草稿</option>
+            <option value="published">已發布</option>
+            <option value="closed">已結束</option>
+          </select>
+        </div>
+
+        <div className="flex justify-end space-x-4">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="px-4 py-2 border rounded hover:bg-gray-100"
+            disabled={isSubmitting}
+          >
+            取消
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? '儲存中...' : '儲存'}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

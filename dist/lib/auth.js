@@ -1,32 +1,66 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserFromCookie = getUserFromCookie;
-exports.setUserCookie = setUserCookie;
-exports.clearUserCookie = clearUserCookie;
-// 從 cookie 中獲取用戶信息
-function getUserFromCookie() {
-    if (typeof window === 'undefined')
-        return null;
-    const userStr = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('user-info='));
-    if (!userStr)
-        return null;
+exports.hasAuthToken = hasAuthToken;
+exports.clearAuthState = clearAuthState;
+exports.checkAuth = checkAuth;
+exports.logout = logout;
+// 檢查是否有 auth token
+function hasAuthToken() {
     try {
-        return JSON.parse(decodeURIComponent(userStr.split('=')[1]));
+        const cookies = document.cookie.split(';');
+        const hasToken = cookies.some(cookie => {
+            const [name, value] = cookie.trim().split('=');
+            return name === 'auth-token' && value;
+        });
+        return hasToken;
     }
-    catch (_a) {
+    catch (error) {
+        return false;
+    }
+}
+// 清除認證狀態
+function clearAuthState() {
+    // 清除 cookie
+    document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
+    // 觸發全局事件，通知其他組件用戶已登出
+    const event = new CustomEvent('auth-state-changed', { detail: { authenticated: false } });
+    window.dispatchEvent(event);
+}
+// 檢查用戶是否已登入
+async function checkAuth() {
+    try {
+        // 先檢查是否有 token
+        if (!hasAuthToken()) {
+            return null;
+        }
+        const response = await fetch('/api/auth/me', {
+            credentials: 'include',
+            cache: 'no-store'
+        });
+        if (!response.ok) {
+            if (response.status === 401) {
+                clearAuthState();
+                return null;
+            }
+            throw new Error('驗證失敗');
+        }
+        const data = await response.json();
+        return data.user;
+    }
+    catch (error) {
+        clearAuthState();
         return null;
     }
 }
-// 設置用戶信息到 cookie
-function setUserCookie(user) {
-    document.cookie = `user-info=${encodeURIComponent(JSON.stringify(user))}; path=/`;
-    // 觸發 storage 事件以更新其他頁面
-    window.dispatchEvent(new Event('storage'));
-}
-// 清除用戶信息
-function clearUserCookie() {
-    document.cookie = 'user-info=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    window.dispatchEvent(new Event('storage'));
+// 登出
+async function logout() {
+    try {
+        await fetch('/api/auth/logout', {
+            method: 'POST',
+            credentials: 'include'
+        });
+    }
+    finally {
+        clearAuthState();
+    }
 }

@@ -47,6 +47,7 @@ export default function EventCard({ event, isAuthenticated, isAdmin, priority }:
     description,
     registrationDeadline,
     projectManager,
+    creatorName,
   } = event
 
   const [isClient, setIsClient] = useState(false)
@@ -145,6 +146,12 @@ export default function EventCard({ event, isAuthenticated, isAdmin, priority }:
             <div className="flex items-center">
               <Clock className="h-4 w-4 mr-2" />
               <span>報名截止：{registrationDeadline}</span>
+            </div>
+          )}
+          {creatorName && (
+            <div className="flex items-center">
+              <User className="h-4 w-4 mr-2" />
+              <span>建立者：{creatorName}</span>
             </div>
           )}
         </div>

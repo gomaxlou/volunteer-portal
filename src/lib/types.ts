@@ -5,36 +5,24 @@ export interface Event {
   endDate?: string;
   location: string;
   description: string;
-  image?: string;
-  participants: number;
   maxParticipants: number;
+  participants: number;
   registrationDeadline: string;
-  projectManager: {
+  image?: string;
+  projectManager?: {
     name: string;
-    title?: string;
+    email: string;
     phone: string;
-    email?: string;
-    line?: string;
   };
   details?: {
-    difficulty?: '簡單' | '中等' | '困難';
-    duration?: string;
+    requirements: string[];
+    notes: string[];
     category?: string;
-    meetingPoint?: string;
-    schedule?: string[];
-    items?: string[];
-    notes?: string[];
-    transportation?: string[];
-    weather?: string[];
-    targetAudience?: string[];
-    requirements?: string[];
-    benefits?: string[];
-    contact?: {
-      name: string;
-      phone: string;
-      email?: string;
-    };
+    difficulty?: string;
+    duration?: string;
   };
+  createdBy?: string;
+  creatorName?: string;
 }
 
 export type EventFormData = Omit<Event, 'id' | 'participants'>;

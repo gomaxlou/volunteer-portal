@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { checkAuth } from '@/lib/auth';
 
@@ -18,6 +18,19 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+
+  // 檢查登入狀態
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const user = await checkAuth();
+      if (user) {
+        router.push('/');
+        router.refresh();
+      }
+    };
+    
+    checkLoginStatus();
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

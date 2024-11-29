@@ -125,6 +125,8 @@
                 <li><a href="#database-operations" class="text-blue-600 hover:underline">4. 資料庫操作</a></li>
                 <li><a href="#api" class="text-blue-600 hover:underline">5. API 端點</a></li>
                 <li><a href="#debug" class="text-blue-600 hover:underline">6. 除錯指南</a></li>
+                <li><a href="#report" class="text-blue-600 hover:underline">7. 報告生成流程</a></li>
+                <li><a href="#permission" class="text-blue-600 hover:underline">8. 權限控制流程</a></li>
             </ul>
         </div>
 
@@ -661,6 +663,61 @@ export const jsonToStringArray = (json: string | null): string[] => {
                         </ul>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- 報告生成流程 -->
+        <section id="report" class="mb-12">
+            <h2 class="text-2xl font-semibold mb-4">7. 報告生成流程</h2>
+            <div class="flow-diagram">
+                <h3 class="font-semibold mb-4">PDF 報告生成</h3>
+                <ol>
+                    <li>前端渲染：
+                        <ul>
+                            <li>使用 React 組件渲染報告內容</li>
+                            <li>應用 Tailwind CSS 樣式</li>
+                            <li>處理中文字體加載</li>
+                        </ul>
+                    </li>
+                    <li>PDF 轉換：
+                        <ul>
+                            <li>使用 html2canvas 捕獲頁面內容</li>
+                            <li>通過 jsPDF 將畫布轉換為 PDF</li>
+                            <li>處理多頁面自動分頁</li>
+                        </ul>
+                    </li>
+                    <li>下載處理：
+                        <ul>
+                            <li>生成 PDF blob 對象</li>
+                            <li>創建臨時下載鏈接</li>
+                            <li>觸發瀏覽器下載機制</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- 權限控制流程 -->
+        <section id="permission" class="mb-12">
+            <h2 class="text-2xl font-semibold mb-4">8. 權限控制流程</h2>
+            <div class="flow-diagram">
+                <h3 class="font-semibold mb-4">中間件處理</h3>
+                <ol>
+                    <li>請求攔截：
+                        <ul>
+                            <li>Next.js middleware 攔截所有請求</li>
+                            <li>檢查請求路徑是否需要認證</li>
+                            <li>公開頁面（包括 /reports）直接放行</li>
+                        </ul>
+                    </li>
+                    <li>認證檢查：
+                        <ul>
+                            <li>檢查 cookie 中的 token</li>
+                            <li>驗證 token 有效性</li>
+                            <li>無效時重定向到登入頁面</li>
+                        </ul>
+                    </li>
+                </ol>
             </div>
         </section>
     </div>

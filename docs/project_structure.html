@@ -658,6 +658,42 @@
                             <div class="file-description">
                                 專案文檔目錄，包含技術文檔和使用說明。
                             </div>
+                            <div class="tree-item">
+                                <span class="file-item" onclick="toggleDescription(this)">
+                                    <i class="fas fa-file file-icon"></i>
+                                    project_structure.html
+                                </span>
+                                <div class="file-description">
+                                    專案結構說明文件，描述專案目錄結構和相關檔案。
+                                </div>
+                            </div>
+                            <div class="tree-item">
+                                <span class="file-item" onclick="toggleDescription(this)">
+                                    <i class="fas fa-file file-icon"></i>
+                                    technical_flow.html
+                                </span>
+                                <div class="file-description">
+                                    技術流程文檔，描述系統的技術實現和流程。
+                                </div>
+                            </div>
+                            <div class="tree-item">
+                                <span class="file-item" onclick="toggleDescription(this)">
+                                    <i class="fas fa-file file-icon"></i>
+                                    user_manual.html
+                                </span>
+                                <div class="file-description">
+                                    使用者手冊，描述系統的使用方法和注意事項。
+                                </div>
+                            </div>
+                            <div class="tree-item">
+                                <span class="file-item" onclick="toggleDescription(this)">
+                                    <i class="fas fa-file file-icon"></i>
+                                    faq.html
+                                </span>
+                                <div class="file-description">
+                                    常見問題解答，描述系統的常見問題和解決方法。
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -776,3 +812,65 @@
     </script>
 </body>
 </html>
+
+<h2>頁面結構</h2>
+<ul>
+    <li>
+        <strong>/</strong> - 首頁
+        <ul>
+            <li>展示志工服務概況</li>
+            <li>提供快速導航到各功能區</li>
+        </ul>
+    </li>
+    <li>
+        <strong>/login</strong> - 登入頁面
+        <ul>
+            <li>用戶認證</li>
+            <li>權限管理</li>
+        </ul>
+    </li>
+    <li>
+        <strong>/reports</strong> - 報告頁面（公開訪問）
+        <ul>
+            <li>志工服務統計報告</li>
+            <li>支援 PDF 下載功能</li>
+            <li>自動分頁處理</li>
+            <li>支援中文字體</li>
+        </ul>
+    </li>
+    <li>
+        <strong>/events</strong> - 活動管理
+        <ul>
+            <li>活動列表</li>
+            <li>活動詳情</li>
+            <li>報名功能</li>
+        </ul>
+    </li>
+    <li>
+        <strong>/donation</strong> - 捐款頁面
+        <ul>
+            <li>捐款信息</li>
+            <li>捐款方式說明</li>
+        </ul>
+    </li>
+</ul>
+
+<h2>權限管理</h2>
+<ul>
+    <li>公開頁面（無需登入）：
+        <ul>
+            <li>首頁 (/)</li>
+            <li>登入頁面 (/login)</li>
+            <li>關於我們 (/about)</li>
+            <li>捐款頁面 (/donation)</li>
+            <li>報告頁面 (/reports)</li>
+        </ul>
+    </li>
+    <li>需要登入訪問：
+        <ul>
+            <li>活動管理 (/events/*)</li>
+            <li>用戶管理 (/users/*)</li>
+            <li>管理面板 (/admin/*)</li>
+        </ul>
+    </li>
+</ul>

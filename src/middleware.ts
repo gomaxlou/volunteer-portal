@@ -11,7 +11,6 @@ const publicPaths = [
   '/',
   '/about',
   '/donation',
-  '/reports',
   '/api/auth/callback',
   '/api/auth/providers',
 ];
@@ -20,8 +19,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   console.log('Middleware 處理路徑:', pathname);
 
-  // 如果是公開路徑，直接放行
-  if (publicPaths.some(path => pathname.startsWith(path))) {
+  // 如果是公開路徑或報告頁面，直接放行
+  if (publicPaths.some(path => pathname.startsWith(path)) || pathname.startsWith('/reports')) {
     return NextResponse.next();
   }
 

@@ -294,22 +294,10 @@ export default function CreateEventPage() {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6">新增活動</h1>
+    <div className="container mx-auto py-8 px-4">
+      <h1 className="text-2xl font-bold mb-6 text-center">新增活動</h1>
       
-      <Button
-        type="submit"
-        form="createEventForm"
-        disabled={loading}
-        variant="contained"
-        color="primary"
-        fullWidth
-        className="mb-6"
-      >
-        {loading ? '處理中...' : '新增活動'}
-      </Button>
-
-      <form id="createEventForm" onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+      <form id="createEventForm" onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto">
         {/* 基本資訊 */}
         <div>
           <label className="block text-sm font-medium mb-1">
@@ -619,16 +607,15 @@ export default function CreateEventPage() {
           />
         </div>
 
-        <Button
-          type="submit"
-          disabled={loading}
-          variant="contained"
-          color="primary"
-          fullWidth
-          className="mt-6"
-        >
-          {loading ? '處理中...' : '新增活動'}
-        </Button>
+        <div className="flex justify-center mt-8">
+          <button
+            type="submit"
+            disabled={loading}
+            className="inline-flex items-center px-8 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? '處理中...' : '新增活動'}
+          </button>
+        </div>
       </form>
 
       <Snackbar

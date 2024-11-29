@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>測試日誌</title>
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .log-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            border: 1px solid #dee2e6;
+            margin: 20px 0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .test-header {
+            background: #343a40;
+            color: white;
+            padding: 10px 15px;
+            font-weight: bold;
+        }
+        .test-body {
+            padding: 15px;
+        }
+        .log-entry {
+            padding: 8px 15px;
+            margin: 5px 0;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        .timestamp {
+            color: #6c757d;
+            margin-right: 10px;
+        }
+        .test-name {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .test-result {
+            padding: 10px 15px;
+            margin-top: 10px;
+            border-top: 1px solid #dee2e6;
+            font-weight: bold;
+        }
+        .duration {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        .auto-scroll {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .auto-scroll:hover {
+            background: #0056b3;
+        }
+    </style>
+    <script>
+        function scrollToBottom() {
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+        // 自動滾動到底部
+        window.onload = scrollToBottom;
+    </script>
+</head>
+<body>
+    <div class="log-container">
+        <h1>測試日誌</h1>
+        <div id="log-content">
+            <div class="log-entry" style="background-color: #17a2b815;">
+                <span class="timestamp">2024-11-29 08:16:22</span>
+                
+                <span style="color: #17a2b8;">執行每日快取清理</span>
+                
+            </div>
+            <div class="log-entry" style="background-color: #17a2b815;">
+                <span class="timestamp">2024-11-29 08:16:22</span>
+                
+                <span style="color: #17a2b8;">清理所有測試快取</span>
+                
+            </div>
+        <div class="test-section">
+            <div class="test-header">
+                測試開始: EventOperations.getById
+                <div style="font-size: 0.9em;">時間: 2024-11-29 08:16:22</div>
+            </div>
+            <div class="test-body">
+            <div class="log-entry" style="background-color: #ffc10715;">
+                <span class="timestamp">2024-11-29 08:16:22</span>
+                <span class="test-name">[EventOperations.getById]</span>
+                <span style="color: #ffc107;">找不到快取記錄，需要執行測試</span>
+                <span class="duration">(1ms)</span>
+            </div>
+            <div class="log-entry" style="background-color: #28a74515;">
+                <span class="timestamp">2024-11-29 08:16:23</span>
+                <span class="test-name">[EventOperations.getById]</span>
+                <span style="color: #28a745;">記錄測試結果: PASS</span>
+                <span class="duration">(518ms)</span>
+            </div>
+            <div class="test-result" style="color: #28a745;">
+                結果: PASS
+                <div class="duration">耗時: 519ms</div>
+            </div>
+        </div>
+    </div>
+        <div class="test-section">
+            <div class="test-header">
+                測試開始: EventsList.render
+                <div style="font-size: 0.9em;">時間: 2024-11-29 08:16:23</div>
+            </div>
+            <div class="test-body">
+            <div class="log-entry" style="background-color: #ffc10715;">
+                <span class="timestamp">2024-11-29 08:16:23</span>
+                <span class="test-name">[EventsList.render]</span>
+                <span style="color: #ffc107;">找不到快取記錄，需要執行測試</span>
+                <span class="duration">(0ms)</span>
+            </div>
+            <div class="log-entry" style="background-color: #dc354515;">
+                <span class="timestamp">2024-11-29 08:16:23</span>
+                <span class="test-name">[EventsList.render]</span>
+                <span style="color: #dc3545;">記錄測試結果: FAIL (渲染失敗：找不到必要的 props)</span>
+                <span class="duration">(309ms)</span>
+            </div>

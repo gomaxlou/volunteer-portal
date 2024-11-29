@@ -27,15 +27,15 @@ db.exec(`
 `);
 
 // 定義資料庫事件介面
-interface DbEvent {
-  id?: number;
+export interface DbEvent {
+  id: number;
   title: string;
   startDate: string;
-  endDate: string;
+  endDate?: string;
   location: string;
-  description: string;
+  description?: string;
   maxParticipants: number;
-  participants?: number;
+  participants: number;
   registrationDeadline: string;
   image?: string;
   projectManagerName?: string;
@@ -49,15 +49,15 @@ interface DbEvent {
 }
 
 // 定義 API 事件介面
-export interface Event {
-  id?: number;
+export interface ApiEvent {
+  id: number;
   title: string;
   startDate: string;
-  endDate: string;
+  endDate?: string;
   location: string;
-  description: string;
+  description?: string;
   maxParticipants: number;
-  participants?: number;
+  participants: number;
   registrationDeadline: string;
   image?: string;
   projectManager?: {
@@ -65,7 +65,7 @@ export interface Event {
     email: string;
     phone: string;
   };
-  details?: {
+  details: {
     requirements: string[];
     notes: string[];
   };
@@ -89,11 +89,11 @@ export const eventQueries = {
     const result = stmt.run(
       event.title,
       event.startDate,
-      event.endDate,
+      event.endDate || '',
       event.location,
-      event.description,
+      event.description || '',
       event.maxParticipants,
-      event.participants || 0,
+      event.participants,
       event.registrationDeadline,
       event.image || '/images/default-event.jpg',
       event.projectManagerName || null,
@@ -118,7 +118,7 @@ export const eventQueries = {
     `);
 
     const events = stmt.all() as DbEvent[];
-    return events.map(event => ({
+    return events.map((event): ApiEvent => ({
       id: event.id,
       title: event.title,
       startDate: event.startDate,
@@ -153,7 +153,32 @@ export const eventQueries = {
       WHERE e.id = ?
     `);
 
-    return stmt.get(id) as DbEvent | undefined;
+    const event = stmt.get(id) as DbEvent | undefined;
+    if (!event) return null;
+
+    return {
+      id: event.id,
+      title: event.title,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      location: event.location,
+      description: event.description,
+      maxParticipants: event.maxParticipants,
+      participants: event.participants,
+      registrationDeadline: event.registrationDeadline,
+      image: event.image,
+      projectManager: event.projectManagerName ? {
+        name: event.projectManagerName,
+        email: event.projectManagerEmail || '',
+        phone: event.projectManagerPhone || ''
+      } : undefined,
+      details: {
+        requirements: JSON.parse(event.requirements || '[]'),
+        notes: JSON.parse(event.notes || '[]')
+      },
+      createdBy: event.createdBy,
+      creatorName: event.creatorName
+    } as ApiEvent;
   },
 
   update: (id: number, event: Partial<DbEvent>) => {

@@ -7,7 +7,7 @@ import * as crypto from 'crypto';
  */
 export interface User {
     id?: number;
-    name: string;
+    chinese_name: string;
     email: string;
     phone?: string;
 }
@@ -51,10 +51,10 @@ class UserOperations {
     create(user: User) {
         const db = getDb();
         const stmt = db.prepare(`
-            INSERT INTO users (name, email, phone)
+            INSERT INTO users (chinese_name, email, phone)
             VALUES (?, ?, ?)
         `);
-        const result = stmt.run(user.name, user.email, user.phone);
+        const result = stmt.run(user.chinese_name, user.email, user.phone);
         db.close();
         return result.lastInsertRowid;
     }
@@ -78,15 +78,15 @@ class UserOperations {
     // 更新用戶資料
     update(id: number, user: Partial<User>) {
         const db = getDb();
-        const { name, email, phone } = user;
+        const { chinese_name, email, phone } = user;
         const stmt = db.prepare(`
             UPDATE users 
-            SET name = COALESCE(?, name),
+            SET chinese_name = COALESCE(?, chinese_name),
                 email = COALESCE(?, email),
                 phone = COALESCE(?, phone)
             WHERE id = ?
         `);
-        const result = stmt.run(name, email, phone, id);
+        const result = stmt.run(chinese_name, email, phone, id);
         db.close();
         return result.changes > 0;
     }
@@ -162,7 +162,7 @@ class EventOperations {
                     projectManagerName, projectManagerTitle, projectManagerEmail,
                     projectManagerPhone, projectManagerLine, category, difficulty,
                     requirements, benefits, items, notes, transportation,
-                    meetingPoint, schedule, status
+                    meetingPoint, schedule, status, createdBy
                 )
                 VALUES (
                     @title, @startDate, @endDate, @location, @description,
@@ -170,7 +170,7 @@ class EventOperations {
                     @projectManagerName, @projectManagerTitle, @projectManagerEmail,
                     @projectManagerPhone, @projectManagerLine, @category, @difficulty,
                     @requirements, @benefits, @items, @notes, @transportation,
-                    @meetingPoint, @schedule, @status
+                    @meetingPoint, @schedule, @status, @createdBy
                 )
             `);
 
@@ -199,7 +199,8 @@ class EventOperations {
                 transportation: event.transportation?.trim() || null,
                 meetingPoint: event.meetingPoint?.trim() || null,
                 schedule: event.schedule?.trim() || null,
-                status: event.status || 'draft'
+                status: event.status || 'draft',
+                createdBy: event.createdBy || null
             };
 
             // 輸出詳細的插入數據日誌
@@ -237,7 +238,21 @@ class EventOperations {
     getAll() {
         const db = getDb();
         try {
-            return db.prepare('SELECT * FROM events ORDER BY created_at DESC').all();
+            const events = db.prepare(`
+                SELECT e.*, u.chinese_name as creatorName
+                FROM events e
+                LEFT JOIN users u ON e.createdBy = u.id
+                WHERE e.status != 'deleted'
+                ORDER BY e.created_at DESC
+            `).all();
+            return events.map((event: { requirements: string[] | null | undefined; notes: string[] | null | undefined; }) => ({
+                ...event,
+                requirements: this.stringArrayToJson(event.requirements),
+                notes: this.stringArrayToJson(event.notes)
+            }));
+        } catch (error) {
+            console.error('Get all events error:', error);
+            return [];
         } finally {
             db.close();
         }
@@ -247,22 +262,21 @@ class EventOperations {
     getById(id: number) {
         const db = getDb();
         try {
-            const stmt = db.prepare('SELECT * FROM events WHERE id = ?');
-            const event = stmt.get(id);
+            const event = db.prepare(`
+                SELECT e.*, u.chinese_name as creatorName
+                FROM events e
+                LEFT JOIN users u ON e.createdBy = u.id
+                WHERE e.id = ? AND e.status != 'deleted'
+            `).get(id);
             if (!event) return null;
-
             return {
                 ...event,
                 requirements: this.jsonToStringArray(event.requirements),
-                benefits: this.jsonToStringArray(event.benefits),
-                items: this.jsonToStringArray(event.items),
                 notes: this.jsonToStringArray(event.notes)
             };
         } catch (error) {
-            console.error('Error getting event by ID:', error);
-            throw error;
-        } finally {
-            db.close();
+            console.error('Get event by id error:', error);
+            return null;
         }
     }
 
@@ -404,18 +418,12 @@ class EventOperations {
         }
     }
 
-    // 刪除活動
+    // 刪除活動（軟刪除）
     delete(id: number): boolean {
         const db = getDb();
-        try {
-            const result = db.prepare('DELETE FROM events WHERE id = ?').run(id);
-            return result.changes > 0;
-        } catch (error) {
-            console.error('Delete event error:', error);
-            return false;
-        } finally {
-            db.close();
-        }
+        const stmt = db.prepare('UPDATE events SET status = ? WHERE id = ?');
+        const result = stmt.run('deleted', id);
+        return result.changes > 0;
     }
 }
 

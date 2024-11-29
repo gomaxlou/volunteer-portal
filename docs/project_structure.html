@@ -16,17 +16,19 @@
         }
 
         .directory-tree {
-            margin: 1rem 0;
-            padding: 1rem;
-            background: #f8fafc;
-            border-radius: 8px;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: #ffffff;
+            border-radius: 12px;
             border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .tree-item {
-            margin: 0.5rem 0;
-            padding-left: 1.5rem;
+            margin: 0.75rem 0;
+            padding-left: 2rem;
             position: relative;
+            transition: all 0.2s ease;
         }
 
         .tree-item::before {
@@ -35,7 +37,7 @@
             left: 0;
             top: 0;
             bottom: 0;
-            width: 2px;
+            width: 1px;
             background: #e2e8f0;
         }
 
@@ -48,113 +50,171 @@
             position: absolute;
             left: 0;
             top: 50%;
-            width: 1rem;
-            height: 2px;
+            width: 1.5rem;
+            height: 1px;
             background: #e2e8f0;
         }
 
         .folder-icon {
-            color: #3b82f6;
-            margin-right: 0.5rem;
+            color: #4f46e5;
+            margin-right: 0.75rem;
         }
 
         .file-icon {
-            color: #64748b;
-            margin-right: 0.5rem;
+            color: #6b7280;
+            margin-right: 0.75rem;
         }
 
         .folder-content {
             display: none;
-            margin-left: 1rem;
+            margin-left: 1.5rem;
+            padding-top: 0.5rem;
         }
 
         .folder-content.show {
             display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .folder-toggle {
             cursor: pointer;
             user-select: none;
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
         }
 
         .folder-toggle:hover {
-            color: #2563eb;
+            background-color: #f3f4f6;
+            color: #4f46e5;
         }
 
         .file-description {
-            font-size: 0.875rem;
-            color: #64748b;
-            margin-left: 2rem;
-            margin-top: 0.25rem;
-            padding: 0.5rem;
-            background: #f1f5f9;
-            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #4b5563;
+            margin-left: 2.5rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 3px solid #4f46e5;
             display: none;
+            line-height: 1.6;
         }
 
         .file-description.show {
             display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .tag.api { 
+            background-color: #e0e7ff; 
+            color: #4338ca; 
+        }
+        .tag.component { 
+            background-color: #dcfce7; 
+            color: #15803d; 
+        }
+        .tag.config { 
+            background-color: #fef3c7; 
+            color: #92400e; 
+        }
+        .tag.db { 
+            background-color: #f3e8ff; 
+            color: #6d28d9; 
         }
 
         .search-box {
             width: 100%;
-            padding: 0.5rem;
-            margin: 1rem 0;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            margin: 1.5rem 0;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
             font-size: 1rem;
+            transition: all 0.2s ease;
+            background-color: #ffffff;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
         .highlight {
             background-color: #fef08a;
+            padding: 0.125rem 0.25rem;
+            border-radius: 4px;
         }
 
         .file-link {
-            color: #2563eb;
-            text-decoration: underline;
-            cursor: pointer;
+            color: #4f46e5;
+            text-decoration: none;
+            border-bottom: 1px dashed #4f46e5;
+            transition: all 0.2s ease;
         }
 
         .file-link:hover {
-            color: #1d4ed8;
+            color: #4338ca;
+            border-bottom-style: solid;
         }
 
         .related-files {
-            margin-top: 0.5rem;
-            padding: 0.5rem;
-            background: #f1f5f9;
-            border-left: 3px solid #3b82f6;
-            font-size: 0.875rem;
+            margin-top: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: #f8fafc;
+            border-left: 3px solid #4f46e5;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
         }
 
         .related-files h4 {
             font-weight: 600;
-            margin-bottom: 0.25rem;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
         }
 
         .related-files ul {
             margin: 0;
             padding-left: 1.5rem;
-            list-style-type: disc;
+            list-style-type: none;
         }
 
         .related-files li {
-            margin: 0.25rem 0;
+            margin: 0.375rem 0;
+            position: relative;
         }
 
-        .tag {
-            display: inline-block;
-            padding: 0.125rem 0.5rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            margin-left: 0.5rem;
-            background-color: #e2e8f0;
+        .related-files li::before {
+            content: "•";
+            color: #4f46e5;
+            position: absolute;
+            left: -1rem;
         }
-
-        .tag.api { background-color: #dbeafe; color: #1e40af; }
-        .tag.component { background-color: #dcfce7; color: #166534; }
-        .tag.config { background-color: #fef3c7; color: #92400e; }
-        .tag.db { background-color: #ede9fe; color: #5b21b6; }
 
         @media print {
             .directory-tree {
@@ -168,6 +228,83 @@
             .file-description {
                 display: block !important;
                 break-inside: avoid;
+            }
+        }
+
+        .page-structure {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+
+        .structure-section {
+            margin-bottom: 2rem;
+        }
+
+        .structure-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .page-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .page-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 3px solid #4f46e5;
+        }
+
+        .page-path {
+            display: inline-block;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #4f46e5;
+            background: #e0e7ff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+        }
+
+        .page-name {
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .page-desc {
+            margin-top: 0.5rem;
+            color: #4b5563;
+            font-size: 0.9rem;
+        }
+
+        .page-desc ul {
+            margin: 0.5rem 0 0 1.25rem;
+            list-style-type: disc;
+        }
+
+        .page-desc li {
+            margin: 0.25rem 0;
+        }
+
+        @media (max-width: 640px) {
+            .page-structure {
+                padding: 1rem;
+            }
+
+            .page-list {
+                gap: 1rem;
             }
         }
     </style>
@@ -714,6 +851,85 @@
         </div>
     </div>
 
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold mb-4">頁面結構</h2>
+        <div class="page-structure">
+            <div class="structure-section">
+                <h3 class="section-title">公開頁面</h3>
+                <div class="page-list">
+                    <div class="page-item">
+                        <span class="page-path">/</span>
+                        <span class="page-name">首頁</span>
+                        <div class="page-desc">展示志工服務概況、提供快速導航到各功能區</div>
+                    </div>
+                    
+                    <div class="page-item">
+                        <span class="page-path">/login</span>
+                        <span class="page-name">登入頁面</span>
+                        <div class="page-desc">用戶認證、權限管理</div>
+                    </div>
+                    
+                    <div class="page-item">
+                        <span class="page-path">/reports</span>
+                        <span class="page-name">報告頁面</span>
+                        <div class="page-desc">
+                            <ul>
+                                <li>志工服務統計報告</li>
+                                <li>支援 PDF 下載功能</li>
+                                <li>自動分頁處理</li>
+                                <li>支援中文字體</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="page-item">
+                        <span class="page-path">/donation</span>
+                        <span class="page-name">捐款頁面</span>
+                        <div class="page-desc">
+                            <ul>
+                                <li>捐款資訊</li>
+                                <li>捐款方式說明</li>
+                                <li>權限管理</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="page-item">
+                        <span class="page-path">/about</span>
+                        <span class="page-name">關於我們</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="structure-section">
+                <h3 class="section-title">需要登入訪問</h3>
+                <div class="page-list">
+                    <div class="page-item">
+                        <span class="page-path">/events/*</span>
+                        <span class="page-name">活動管理</span>
+                        <div class="page-desc">
+                            <ul>
+                                <li>活動列表</li>
+                                <li>活動詳情</li>
+                                <li>報名功能</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="page-item">
+                        <span class="page-path">/users/*</span>
+                        <span class="page-name">用戶管理</span>
+                    </div>
+                    
+                    <div class="page-item">
+                        <span class="page-path">/admin/*</span>
+                        <span class="page-name">管理面板</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function toggleFolder(element) {
             const content = element.nextElementSibling;
@@ -812,65 +1028,3 @@
     </script>
 </body>
 </html>
-
-<h2>頁面結構</h2>
-<ul>
-    <li>
-        <strong>/</strong> - 首頁
-        <ul>
-            <li>展示志工服務概況</li>
-            <li>提供快速導航到各功能區</li>
-        </ul>
-    </li>
-    <li>
-        <strong>/login</strong> - 登入頁面
-        <ul>
-            <li>用戶認證</li>
-            <li>權限管理</li>
-        </ul>
-    </li>
-    <li>
-        <strong>/reports</strong> - 報告頁面（公開訪問）
-        <ul>
-            <li>志工服務統計報告</li>
-            <li>支援 PDF 下載功能</li>
-            <li>自動分頁處理</li>
-            <li>支援中文字體</li>
-        </ul>
-    </li>
-    <li>
-        <strong>/events</strong> - 活動管理
-        <ul>
-            <li>活動列表</li>
-            <li>活動詳情</li>
-            <li>報名功能</li>
-        </ul>
-    </li>
-    <li>
-        <strong>/donation</strong> - 捐款頁面
-        <ul>
-            <li>捐款信息</li>
-            <li>捐款方式說明</li>
-        </ul>
-    </li>
-</ul>
-
-<h2>權限管理</h2>
-<ul>
-    <li>公開頁面（無需登入）：
-        <ul>
-            <li>首頁 (/)</li>
-            <li>登入頁面 (/login)</li>
-            <li>關於我們 (/about)</li>
-            <li>捐款頁面 (/donation)</li>
-            <li>報告頁面 (/reports)</li>
-        </ul>
-    </li>
-    <li>需要登入訪問：
-        <ul>
-            <li>活動管理 (/events/*)</li>
-            <li>用戶管理 (/users/*)</li>
-            <li>管理面板 (/admin/*)</li>
-        </ul>
-    </li>
-</ul>

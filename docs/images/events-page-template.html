@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>活動管理頁面示意圖</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Microsoft JhengHei', sans-serif;
+        }
+        .page-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 600px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .search-bar {
+            grid-column: 1 / -1;
+            padding: 15px;
+            background-color: #f7fafc;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+        }
+        .create-button {
+            padding: 8px 16px;
+            background-color: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .create-button:hover {
+            background-color: #3182ce;
+        }
+        .left-panel {
+            background-color: #f7fafc;
+            padding: 15px;
+            border-right: 1px solid #e2e8f0;
+        }
+        .right-panel {
+            padding: 20px;
+            background-color: white;
+        }
+        .event-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .event-item:hover {
+            background-color: #ebf8ff;
+        }
+        .event-item.active {
+            background-color: #e6fffa;
+            border-color: #4fd1c5;
+        }
+        .event-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+        .status-active {
+            background-color: #c6f6d5;
+            color: #2f855a;
+        }
+        .status-ended {
+            background-color: #fed7d7;
+            color: #9b2c2c;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .edit-button, .delete-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .edit-button {
+            background-color: #48bb78;
+            color: white;
+        }
+        .edit-button:hover {
+            background-color: #38a169;
+        }
+        .delete-button {
+            background-color: #f56565;
+            color: white;
+        }
+        .delete-button:hover {
+            background-color: #e53e3e;
+        }
+        .event-details {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .event-meta {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .meta-label {
+            font-size: 0.9em;
+            color: #718096;
+        }
+        .meta-value {
+            font-weight: bold;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="搜尋活動...（標題、日期或地點）">
+            <button class="create-button">新增活動</button>
+        </div>
+        <div class="left-panel">
+            <div class="event-item active">
+                <h4>2024春季淨灘活動</h4>
+                <p>2024-03-15</p>
+                <span class="event-status status-active">報名中</span>
+            </div>
+            <div class="event-item">
+                <h4>社區長者關懷計畫</h4>
+                <p>2024-02-20</p>
+                <span class="event-status status-active">報名中</span>
+            </div>
+            <div class="event-item">
+                <h4>2024寒假兒童營隊</h4>
+                <p>2024-01-25</p>
+                <span class="event-status status-ended">已結束</span>
+            </div>
+        </div>
+        <div class="right-panel">
+            <div class="action-buttons">
+                <button class="edit-button">編輯活動</button>
+                <button class="delete-button">刪除活動</button>
+            </div>
+            <div class="event-details">
+                <h2>2024春季淨灘活動</h2>
+                <div class="event-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">活動日期</span>
+                        <span class="meta-value">2024-03-15</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">活動地點</span>
+                        <span class="meta-value">新北市八里區觀海廣場</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">報名截止</span>
+                        <span class="meta-value">2024-03-10</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">名額限制</span>
+                        <span class="meta-value">50人</span>
+                    </div>
+                </div>
+                <h3>活動說明</h3>
+                <p>為了維護海洋生態環境，我們將在八里海灘舉辦淨灘活動。活動除了淨灘外，也會安排海洋生態教育講座，歡迎大家一同參與。</p>
+                <h3>活動流程</h3>
+                <p>09:00-09:30 報到集合<br>
+                09:30-10:00 活動說明及分組<br>
+                10:00-11:30 淨灘活動<br>
+                11:30-12:00 海洋生態講座<br>
+                12:00-13:00 午餐交流</p>
+                <h3>注意事項</h3>
+                <p>1. 請穿著適合戶外活動的服裝<br>
+                2. 建議攜帶防曬用品、帽子<br>
+                3. 現場提供手套及清潔工具<br>
+                4. 活動提供午餐及飲用水</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用戶管理頁面示意圖</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Microsoft JhengHei', sans-serif;
+        }
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 600px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .toolbar {
+            padding: 15px;
+            background-color: #f7fafc;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .search-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+        }
+        .add-user-button {
+            padding: 8px 16px;
+            background-color: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .add-user-button:hover {
+            background-color: #3182ce;
+        }
+        .filters {
+            padding: 10px 15px;
+            background-color: white;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            gap: 15px;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-label {
+            color: #4a5568;
+            font-size: 0.9em;
+        }
+        .filter-select {
+            padding: 4px 8px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+        }
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .users-table th,
+        .users-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .users-table th {
+            background-color: #f7fafc;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .users-table tr:hover {
+            background-color: #f7fafc;
+        }
+        .user-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+        .status-active {
+            background-color: #c6f6d5;
+            color: #2f855a;
+        }
+        .status-inactive {
+            background-color: #fed7d7;
+            color: #9b2c2c;
+        }
+        .status-pending {
+            background-color: #feebc8;
+            color: #9c4221;
+        }
+        .action-button {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+        .edit-button {
+            background-color: #4299e1;
+            color: white;
+        }
+        .edit-button:hover {
+            background-color: #3182ce;
+        }
+        .delete-button {
+            background-color: #f56565;
+            color: white;
+        }
+        .delete-button:hover {
+            background-color: #e53e3e;
+        }
+        .pagination {
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+        .page-button {
+            padding: 5px 10px;
+            border: 1px solid #e2e8f0;
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .page-button:hover {
+            background-color: #f7fafc;
+        }
+        .page-button.active {
+            background-color: #4299e1;
+            color: white;
+            border-color: #4299e1;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="toolbar">
+            <input type="text" class="search-input" placeholder="搜尋用戶...（姓名、電話或電子郵件）">
+            <button class="add-user-button">新增用戶</button>
+        </div>
+        <div class="filters">
+            <div class="filter-group">
+                <span class="filter-label">用戶類型：</span>
+                <select class="filter-select">
+                    <option value="all">全部</option>
+                    <option value="volunteer">志工</option>
+                    <option value="admin">管理員</option>
+                    <option value="coordinator">活動協調員</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">狀態：</span>
+                <select class="filter-select">
+                    <option value="all">全部</option>
+                    <option value="active">啟用</option>
+                    <option value="inactive">停用</option>
+                    <option value="pending">待審核</option>
+                </select>
+            </div>
+        </div>
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th>用戶名稱</th>
+                    <th>電子郵件</th>
+                    <th>聯絡電話</th>
+                    <th>用戶類型</th>
+                    <th>狀態</th>
+                    <th>註冊日期</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>王小明</td>
+                    <td>ming.wang@example.com</td>
+                    <td>0912-345-678</td>
+                    <td>志工</td>
+                    <td><span class="user-status status-active">啟用</span></td>
+                    <td>2024-01-15</td>
+                    <td>
+                        <button class="action-button edit-button">編輯</button>
+                        <button class="action-button delete-button">刪除</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>李小華</td>
+                    <td>hua.lee@example.com</td>
+                    <td>0923-456-789</td>
+                    <td>活動協調員</td>
+                    <td><span class="user-status status-active">啟用</span></td>
+                    <td>2024-01-10</td>
+                    <td>
+                        <button class="action-button edit-button">編輯</button>
+                        <button class="action-button delete-button">刪除</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>張小芳</td>
+                    <td>fang.chang@example.com</td>
+                    <td>0934-567-890</td>
+                    <td>志工</td>
+                    <td><span class="user-status status-pending">待審核</span></td>
+                    <td>2024-01-20</td>
+                    <td>
+                        <button class="action-button edit-button">編輯</button>
+                        <button class="action-button delete-button">刪除</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <button class="page-button">«</button>
+            <button class="page-button active">1</button>
+            <button class="page-button">2</button>
+            <button class="page-button">3</button>
+            <button class="page-button">»</button>
+        </div>
+    </div>
+</body>
+</html>

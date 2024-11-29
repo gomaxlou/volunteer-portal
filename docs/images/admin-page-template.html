@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理面板示意圖</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Microsoft JhengHei', sans-serif;
+            background-color: #f7fafc;
+        }
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .dashboard-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .card-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        .card-action {
+            color: #4299e1;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background-color: #f7fafc;
+            border-radius: 6px;
+        }
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            color: #718096;
+        }
+        .chart-container {
+            height: 200px;
+            margin-top: 15px;
+            background-color: #f7fafc;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chart-placeholder {
+            color: #a0aec0;
+            font-size: 0.9em;
+        }
+        .activity-list {
+            margin-top: 15px;
+        }
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        .activity-icon {
+            width: 30px;
+            height: 30px;
+            background-color: #ebf8ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: #4299e1;
+        }
+        .activity-content {
+            flex: 1;
+        }
+        .activity-title {
+            font-size: 0.9em;
+            color: #2d3748;
+            margin-bottom: 3px;
+        }
+        .activity-time {
+            font-size: 0.8em;
+            color: #718096;
+        }
+        .alert-list {
+            margin-top: 15px;
+        }
+        .alert-item {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        .alert-item:last-child {
+            margin-bottom: 0;
+        }
+        .alert-high {
+            background-color: #fed7d7;
+            color: #9b2c2c;
+        }
+        .alert-medium {
+            background-color: #feebc8;
+            color: #9c4221;
+        }
+        .alert-low {
+            background-color: #e6fffa;
+            color: #2c7a7b;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-title">系統概況</div>
+                <a href="#" class="card-action">詳細資訊</a>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <div class="stat-value">1,234</div>
+                    <div class="stat-label">註冊用戶</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">56</div>
+                    <div class="stat-label">進行中活動</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">789</div>
+                    <div class="stat-label">本月服務時數</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">23</div>
+                    <div class="stat-label">待審核申請</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-title">活動參與統計</div>
+                <a href="#" class="card-action">查看報告</a>
+            </div>
+            <div class="chart-container">
+                <div class="chart-placeholder">[活動參與人數統計圖表]</div>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-title">最近活動</div>
+                <a href="#" class="card-action">查看全部</a>
+            </div>
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-icon">✓</div>
+                    <div class="activity-content">
+                        <div class="activity-title">春季淨灘活動報名開始</div>
+                        <div class="activity-time">10分鐘前</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon">!</div>
+                    <div class="activity-content">
+                        <div class="activity-title">社區關懷活動名額即將額滿</div>
+                        <div class="activity-time">30分鐘前</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon">+</div>
+                    <div class="activity-content">
+                        <div class="activity-title">新增5位志工申請</div>
+                        <div class="activity-time">1小時前</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <div class="card-title">系統提醒</div>
+                <a href="#" class="card-action">設定</a>
+            </div>
+            <div class="alert-list">
+                <div class="alert-item alert-high">
+                    系統備份需要更新（上次備份：7天前）
+                </div>
+                <div class="alert-item alert-medium">
+                    3個活動即將開始，等待最終確認
+                </div>
+                <div class="alert-item alert-low">
+                    本月志工服務統計報告已準備就緒
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通用Header和Footer模板</title>
+    <style>
+        /* 重置和基礎樣式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header 樣式 */
+        .header {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #2d3748;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo-text {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #48bb78;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #48bb78;
+            transition: width 0.3s;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .login-button,
+        .register-button {
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .login-button {
+            color: #48bb78;
+            border: 1px solid #48bb78;
+        }
+
+        .login-button:hover {
+            background-color: #f0fff4;
+        }
+
+        .register-button {
+            background-color: #48bb78;
+            color: white;
+        }
+
+        .register-button:hover {
+            background-color: #38a169;
+        }
+
+        .mobile-menu-button {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        /* Footer 樣式 */
+        .footer {
+            background-color: #2d3748;
+            color: white;
+            padding: 4rem 1rem;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section {
+            padding: 0 1rem;
+        }
+
+        .footer-title {
+            font-size: 1.2em;
+            margin-bottom: 1rem;
+            color: #a0aec0;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-link {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-link a {
+            color: #e2e8f0;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-link a:hover {
+            color: #48bb78;
+        }
+
+        .contact-info {
+            color: #e2e8f0;
+            margin-bottom: 0.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background-color: #4a5568;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .social-link:hover {
+            background-color: #48bb78;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid #4a5568;
+            color: #a0aec0;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .mobile-menu-button {
+                display: block;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: white;
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .auth-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .login-button,
+            .register-button {
+                text-align: center;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="/" class="logo">
+                <img src="/logo.png" alt="寶島志工服務團">
+                <span class="logo-text">寶島志工服務團</span>
+            </a>
+            
+            <button class="mobile-menu-button">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12h18M3 6h18M3 18h18"/>
+                </svg>
+            </button>
+
+            <nav class="nav-menu">
+                <a href="/" class="nav-link">首頁</a>
+                <a href="/events" class="nav-link">活動資訊</a>
+                <a href="/about" class="nav-link">關於我們</a>
+                <a href="/donation" class="nav-link">捐款支持</a>
+                <a href="/reports" class="nav-link">成果報告</a>
+                
+                <div class="auth-buttons">
+                    <a href="/login" class="login-button">登入</a>
+                    <a href="/register" class="register-button">註冊</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 頁面內容區域 -->
+    <main style="padding: 2rem;">
+        <!-- 這裡放置各頁面的具體內容 -->
+        <h1>頁面內容</h1>
+        <p>這是一個示例內容區域。在實際應用中，這裡會被替換為各個頁面的具體內容。</p>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3 class="footer-title">關於我們</h3>
+                <ul class="footer-links">
+                    <li class="footer-link"><a href="/about">組織介紹</a></li>
+                    <li class="footer-link"><a href="/team">團隊成員</a></li>
+                    <li class="footer-link"><a href="/partners">合作夥伴</a></li>
+                    <li class="footer-link"><a href="/reports">年度報告</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3 class="footer-title">志工服務</h3>
+                <ul class="footer-links">
+                    <li class="footer-link"><a href="/events">活動資訊</a></li>
+                    <li class="footer-link"><a href="/training">志工培訓</a></li>
+                    <li class="footer-link"><a href="/resources">資源下載</a></li>
+                    <li class="footer-link"><a href="/faq">常見問題</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3 class="footer-title">聯絡資訊</h3>
+                <div class="contact-info">
+                    <p>地址：台北市○○區○○路123號</p>
+                    <p>電話：(02) 2345-6789</p>
+                    <p>Email：contact@volunteer.org.tw</p>
+                </div>
+                <div class="social-links">
+                    <a href="#" class="social-link">FB</a>
+                    <a href="#" class="social-link">IG</a>
+                    <a href="#" class="social-link">YT</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3 class="footer-title">訂閱電子報</h3>
+                <p style="color: #e2e8f0; margin-bottom: 1rem;">
+                    訂閱我們的電子報，獲取最新活動資訊
+                </p>
+                <form style="display: flex; gap: 0.5rem;">
+                    <input type="email" placeholder="請輸入您的Email" 
+                           style="padding: 0.5rem; border-radius: 4px; border: none; flex: 1;">
+                    <button type="submit" 
+                            style="padding: 0.5rem 1rem; background: #48bb78; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        訂閱
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2024 寶島志工服務團 版權所有</p>
+        </div>
+    </footer>
+
+    <script>
+        // 手機版選單切換
+        const mobileMenuButton = document.querySelector('.mobile-menu-button');
+        const navMenu = document.querySelector('.nav-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        // 點擊選單外區域關閉選單
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.header-container')) {
+                navMenu.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

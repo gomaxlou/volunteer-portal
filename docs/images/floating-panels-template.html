@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浮動面板模板</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft JhengHei', sans-serif;
+            min-height: 100vh;
+            background-color: #f7fafc;
+        }
+
+        /* 左側浮動面板 */
+        .left-panel {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: white;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .left-panel.collapsed {
+            transform: translateX(-100%) translateY(-50%);
+        }
+
+        .left-panel-toggle {
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            padding: 8px;
+            cursor: pointer;
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .left-panel-content {
+            width: 280px;
+            padding: 20px;
+        }
+
+        .quick-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .quick-link-item {
+            margin-bottom: 10px;
+        }
+
+        .quick-link {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            text-decoration: none;
+            color: #4a5568;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .quick-link:hover {
+            background-color: #f7fafc;
+            color: #48bb78;
+        }
+
+        .quick-link-icon {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0fff4;
+            border-radius: 4px;
+            color: #48bb78;
+        }
+
+        /* 右側浮動面板 */
+        .right-panel {
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: white;
+            border-radius: 8px 0 0 8px;
+            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .right-panel.collapsed {
+            transform: translateX(100%) translateY(-50%);
+        }
+
+        .right-panel-toggle {
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: white;
+            border: none;
+            border-radius: 4px 0 0 4px;
+            padding: 8px;
+            cursor: pointer;
+            box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .right-panel-content {
+            width: 300px;
+            padding: 20px;
+        }
+
+        .notification-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .notification-item {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            transition: background-color 0.2s;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-item:hover {
+            background-color: #f7fafc;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .notification-title {
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .notification-time {
+            font-size: 0.8em;
+            color: #718096;
+        }
+
+        .notification-content {
+            font-size: 0.9em;
+            color: #4a5568;
+        }
+
+        .notification-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            background-color: #48bb78;
+            color: white;
+            border-radius: 10px;
+            font-size: 0.8em;
+        }
+
+        /* 浮動按鈕組 */
+        .floating-buttons {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .floating-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            background-color: white;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4a5568;
+            transition: all 0.3s;
+        }
+
+        .floating-button:hover {
+            background-color: #48bb78;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .left-panel, .right-panel {
+                display: none;
+            }
+
+            .floating-buttons {
+                right: 10px;
+                bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 左側快速訪問面板 -->
+    <div class="left-panel">
+        <button class="left-panel-toggle" onclick="toggleLeftPanel()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </button>
+        <div class="left-panel-content">
+            <h3>快速訪問</h3>
+            <ul class="quick-links">
+                <li class="quick-link-item">
+                    <a href="/events" class="quick-link">
+                        <span class="quick-link-icon">📅</span>
+                        活動報名
+                    </a>
+                </li>
+                <li class="quick-link-item">
+                    <a href="/volunteer" class="quick-link">
+                        <span class="quick-link-icon">👥</span>
+                        志工專區
+                    </a>
+                </li>
+                <li class="quick-link-item">
+                    <a href="/donation" class="quick-link">
+                        <span class="quick-link-icon">💝</span>
+                        捐款支持
+                    </a>
+                </li>
+                <li class="quick-link-item">
+                    <a href="/contact" class="quick-link">
+                        <span class="quick-link-icon">📞</span>
+                        聯絡我們
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 右側通知面板 -->
+    <div class="right-panel">
+        <button class="right-panel-toggle" onclick="toggleRightPanel()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6"/>
+            </svg>
+        </button>
+        <div class="right-panel-content">
+            <h3>最新通知 <span class="notification-badge">3</span></h3>
+            <ul class="notification-list">
+                <li class="notification-item">
+                    <div class="notification-header">
+                        <span class="notification-title">活動提醒</span>
+                        <span class="notification-time">10分鐘前</span>
+                    </div>
+                    <p class="notification-content">
+                        您報名的「春季淨灘活動」將於明天早上9點開始
+                    </p>
+                </li>
+                <li class="notification-item">
+                    <div class="notification-header">
+                        <span class="notification-title">系統通知</span>
+                        <span class="notification-time">2小時前</span>
+                    </div>
+                    <p class="notification-content">
+                        您的志工時數證明已經核發，請至個人專區查看
+                    </p>
+                </li>
+                <li class="notification-item">
+                    <div class="notification-header">
+                        <span class="notification-title">活動更新</span>
+                        <span class="notification-time">昨天</span>
+                    </div>
+                    <p class="notification-content">
+                        新的志工培訓課程已開放報名，名額有限請把握機會
+                    </p>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 浮動按鈕組 -->
+    <div class="floating-buttons">
+        <button class="floating-button" title="回到頂部">
+            ⬆️
+        </button>
+        <button class="floating-button" title="線上客服">
+            💬
+        </button>
+    </div>
+
+    <!-- 示例內容 -->
+    <div style="max-width: 800px; margin: 40px auto; padding: 20px;">
+        <h1>主要內容區域</h1>
+        <p>這是網頁的主要內容區域。左右兩側的浮動面板可以通過點擊按鈕來展開或收起。</p>
+        <!-- 這裡可以放置更多內容 -->
+    </div>
+
+    <script>
+        // 左側面板控制
+        function toggleLeftPanel() {
+            const panel = document.querySelector('.left-panel');
+            panel.classList.toggle('collapsed');
+        }
+
+        // 右側面板控制
+        function toggleRightPanel() {
+            const panel = document.querySelector('.right-panel');
+            panel.classList.toggle('collapsed');
+        }
+
+        // 回到頂部功能
+        document.querySelector('.floating-buttons').children[0].addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // 儲存面板狀態
+        function savePanelStates() {
+            const leftPanel = document.querySelector('.left-panel');
+            const rightPanel = document.querySelector('.right-panel');
+            
+            localStorage.setItem('leftPanelCollapsed', leftPanel.classList.contains('collapsed'));
+            localStorage.setItem('rightPanelCollapsed', rightPanel.classList.contains('collapsed'));
+        }
+
+        // 恢復面板狀態
+        function restorePanelStates() {
+            const leftPanel = document.querySelector('.left-panel');
+            const rightPanel = document.querySelector('.right-panel');
+            
+            const leftCollapsed = localStorage.getItem('leftPanelCollapsed') === 'true';
+            const rightCollapsed = localStorage.getItem('rightPanelCollapsed') === 'true';
+            
+            if (leftCollapsed) leftPanel.classList.add('collapsed');
+            if (rightCollapsed) rightPanel.classList.add('collapsed');
+        }
+
+        // 監聽面板狀態變化
+        document.querySelector('.left-panel').addEventListener('transitionend', savePanelStates);
+        document.querySelector('.right-panel').addEventListener('transitionend', savePanelStates);
+
+        // 頁面加載時恢復面板狀態
+        window.addEventListener('load', restorePanelStates);
+    </script>
+</body>
+</html>

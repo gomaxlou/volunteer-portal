@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Portal - Database Operations Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 { color: #2563eb; }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border-left: 4px solid #2563eb;
+        }
+        .operation {
+            margin: 20px 0;
+            padding: 15px;
+            background: #fff;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .field-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .field-list li {
+            padding: 8px;
+            margin: 4px 0;
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .required {
+            color: #dc2626;
+            font-weight: bold;
+        }
+        .optional {
+            color: #6b7280;
+        }
+        .method {
+            border-left: 4px solid #3b82f6;
+            padding-left: 15px;
+            margin: 20px 0;
+        }
+        .type-definition {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Database Operations Documentation</h1>
+    
+    <div class="section">
+        <h2>Data Types</h2>
+        
+        <div class="type-definition">
+            <h3>User</h3>
+            <ul class="field-list">
+                <li><span class="optional">id?: number</span> - Unique identifier</li>
+                <li><span class="required">chinese_name: string</span> - User's Chinese name</li>
+                <li><span class="required">email: string</span> - User's email address</li>
+                <li><span class="optional">phone?: string</span> - User's phone number</li>
+            </ul>
+        </div>
+
+        <div class="type-definition">
+            <h3>VolunteerEvent</h3>
+            <ul class="field-list">
+                <li><span class="optional">id?: number</span> - Unique identifier</li>
+                <li><span class="required">title: string</span> - Event title</li>
+                <li><span class="required">startDate: string</span> - Event start date</li>
+                <li><span class="required">endDate: string</span> - Event end date</li>
+                <li><span class="required">location: string</span> - Event location</li>
+                <li><span class="required">maxParticipants: number</span> - Maximum number of participants</li>
+                <li><span class="required">registrationDeadline: string</span> - Registration deadline</li>
+                <li><span class="required">projectManagerName: string</span> - Project manager's name</li>
+                <li><span class="required">projectManagerEmail: string</span> - Project manager's email</li>
+                <li><span class="required">projectManagerPhone: string</span> - Project manager's phone</li>
+                <li><span class="optional">description?: string</span> - Event description</li>
+                <li><span class="optional">image?: string</span> - Event image URL</li>
+                <li><span class="optional">participants?: number</span> - Current number of participants</li>
+                <li><span class="optional">projectManagerTitle?: string</span> - Project manager's title</li>
+                <li><span class="optional">projectManagerLine?: string</span> - Project manager's Line ID</li>
+                <li><span class="optional">category?: string</span> - Event category</li>
+                <li><span class="optional">difficulty?: string</span> - Event difficulty level</li>
+                <li><span class="optional">requirements?: string[]</span> - Participation requirements</li>
+                <li><span class="optional">benefits?: string[]</span> - Event benefits</li>
+                <li><span class="optional">items?: string[]</span> - Required items</li>
+                <li><span class="optional">notes?: string[]</span> - Additional notes</li>
+                <li><span class="optional">transportation?: string</span> - Transportation information</li>
+                <li><span class="optional">meetingPoint?: string</span> - Meeting point details</li>
+                <li><span class="optional">schedule?: string</span> - Event schedule</li>
+                <li><span class="optional">status?: string</span> - Event status</li>
+                <li><span class="optional">created_at?: string</span> - Creation timestamp</li>
+                <li><span class="optional">updated_at?: string</span> - Last update timestamp</li>
+                <li><span class="optional">createdBy?: number</span> - Creator's user ID</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Operations</h2>
+
+        <div class="operation">
+            <h3>User Operations</h3>
+            <div class="method">
+                <h4>create(user: User)</h4>
+                <p>Creates a new user in the database.</p>
+            </div>
+        </div>
+
+        <div class="operation">
+            <h3>Event Operations</h3>
+            <div class="method">
+                <h4>create(event: VolunteerEvent)</h4>
+                <p>Creates a new volunteer event.</p>
+            </div>
+            <div class="method">
+                <h4>getAll()</h4>
+                <p>Retrieves all volunteer events.</p>
+            </div>
+            <div class="method">
+                <h4>getById(id: number)</h4>
+                <p>Retrieves a specific event by its ID.</p>
+            </div>
+            <div class="method">
+                <h4>update(id: number, event: Partial<VolunteerEvent>)</h4>
+                <p>Updates an existing event. Returns boolean indicating success.</p>
+            </div>
+            <div class="method">
+                <h4>updateParticipants(id: number, count: number)</h4>
+                <p>Updates the participant count for an event.</p>
+            </div>
+            <div class="method">
+                <h4>delete(id: number)</h4>
+                <p>Soft deletes an event. Returns boolean indicating success.</p>
+            </div>
+        </div>
+
+        <div class="operation">
+            <h3>User Event Operations</h3>
+            <div class="method">
+                <h4>register(userId: number, eventId: number)</h4>
+                <p>Registers a user for an event.</p>
+            </div>
+            <div class="method">
+                <h4>getUserEvents(userId: number)</h4>
+                <p>Retrieves all events a user has registered for.</p>
+            </div>
+            <div class="method">
+                <h4>getEventUsers(eventId: number)</h4>
+                <p>Retrieves all users registered for an event.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Implementation Notes</h2>
+        <ul>
+            <li>All database operations are implemented using SQLite through better-sqlite3</li>
+            <li>Array fields (requirements, benefits, items, notes) are stored as JSON strings in the database</li>
+            <li>Dates are stored in ISO 8601 format</li>
+            <li>Soft deletion is implemented for events (records are marked as deleted rather than removed)</li>
+            <li>Automatic timestamp management for created_at and updated_at fields</li>
+        </ul>
+    </div>
+
+    <script>
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

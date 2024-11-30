@@ -472,7 +472,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
               </label>
               <textarea
                 name="benefits"
-                value={formData.benefits?.join('\n') || ''}
+                value={Array.isArray(formData.benefits) ? formData.benefits.join('\n') : ''}
                 onChange={(e) => {
                   const benefits = e.target.value.split('\n').filter(Boolean);
                   setFormData(prev => {
@@ -494,7 +494,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
               </label>
               <textarea
                 name="items"
-                value={formData.items?.join('\n') || ''}
+                value={Array.isArray(formData.items) ? formData.items.join('\n') : ''}
                 onChange={(e) => {
                   const items = e.target.value.split('\n').filter(Boolean);
                   setFormData(prev => {

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寶島志工服務團 - 志工召募</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background-color: #f7fafc;
+        }
+
+        /* Header 樣式 */
+        .header {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #2d3748;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .logo-text {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        /* Hero Section 樣式 */
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        url('/images/volunteer-hero.jpg') center/cover;
+            color: white;
+            text-align: center;
+            padding: 6rem 1rem;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 3em;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5em;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: #48bb78;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .cta-button:hover {
+            background-color: #38a169;
+        }
+
+        /* 主要內容區域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 1rem;
+        }
+
+        /* 志工類型區塊 */
+        .volunteer-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .volunteer-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .volunteer-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .volunteer-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .volunteer-content {
+            padding: 1.5rem;
+        }
+
+        .volunteer-title {
+            font-size: 1.5em;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        .volunteer-description {
+            color: #4a5568;
+            margin-bottom: 1.5rem;
+        }
+
+        .learn-more {
+            color: #48bb78;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .learn-more svg {
+            margin-left: 0.5rem;
+            width: 20px;
+            height: 20px;
+        }
+
+        /* 步驟說明區塊 */
+        .steps-section {
+            background-color: white;
+            padding: 4rem 0;
+            margin: 4rem 0;
+        }
+
+        .steps-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .steps-title {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 3rem;
+            color: #2d3748;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .step-card {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background-color: #48bb78;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-weight: bold;
+        }
+
+        .step-title {
+            font-size: 1.2em;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+
+        .step-description {
+            color: #4a5568;
+        }
+
+        /* FAQ 區塊 */
+        .faq-section {
+            max-width: 800px;
+            margin: 4rem auto;
+            padding: 0 1rem;
+        }
+
+        .faq-title {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 3rem;
+            color: #2d3748;
+        }
+
+        .faq-item {
+            margin-bottom: 1.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 1rem;
+            background-color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .faq-answer {
+            padding: 1rem;
+            background-color: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: none;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2em;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2em;
+            }
+
+            .volunteer-types {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <a href="/" class="logo">
+                <img src="/images/logo.png" alt="寶島志工服務團 Logo">
+                <span class="logo-text">寶島志工服務團</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">加入我們的志工行列</h1>
+            <p class="hero-subtitle">一起為社會帶來正向的改變</p>
+            <a href="#apply" class="cta-button">立即報名</a>
+        </div>
+    </section>
+
+    <!-- 主要內容 -->
+    <main class="main-content">
+        <!-- 志工類型 -->
+        <section class="volunteer-types">
+            <div class="volunteer-card">
+                <img src="/images/education.jpg" alt="教育志工" class="volunteer-image">
+                <div class="volunteer-content">
+                    <h3 class="volunteer-title">教育志工</h3>
+                    <p class="volunteer-description">
+                        協助偏鄉學童課業輔導，提供教育資源，幫助孩子們擁有更好的學習機會。
+                    </p>
+                    <a href="#" class="learn-more">
+                        了解更多
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="volunteer-card">
+                <img src="/images/environment.jpg" alt="環保志工" class="volunteer-image">
+                <div class="volunteer-content">
+                    <h3 class="volunteer-title">環保志工</h3>
+                    <p class="volunteer-description">
+                        參與環境保護活動，包括淨灘、植樹等，為地球永續發展盡一份心力。
+                    </p>
+                    <a href="#" class="learn-more">
+                        了解更多
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="volunteer-card">
+                <img src="/images/elderly.jpg" alt="長者關懷志工" class="volunteer-image">
+                <div class="volunteer-content">
+                    <h3 class="volunteer-title">長者關懷志工</h3>
+                    <p class="volunteer-description">
+                        探訪獨居長者，提供生活協助和心靈陪伴，讓長者感受社會的溫暖。
+                    </p>
+                    <a href="#" class="learn-more">
+                        了解更多
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 步驟說明 -->
+        <section class="steps-section">
+            <div class="steps-container">
+                <h2 class="steps-title">如何成為志工</h2>
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3 class="step-title">線上報名</h3>
+                        <p class="step-description">
+                            填寫基本資料和興趣領域，讓我們更了解你。
+                        </p>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3 class="step-title">參加培訓</h3>
+                        <p class="step-description">
+                            完成必要的志工培訓課程，學習服務技能。
+                        </p>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3 class="step-title">開始服務</h3>
+                        <p class="step-description">
+                            選擇感興趣的服務項目，展開志工之旅。
+                        </p>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h3 class="step-title">經驗分享</h3>
+                        <p class="step-description">
+                            記錄服務心得，與其他志工交流成長。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="faq-section">
+            <h2 class="faq-title">常見問題</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">
+                    需要特殊專業背景嗎？
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    不需要特殊專業背景，只要有服務熱忱即可。我們會提供必要的培訓課程。
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    服務時間有限制嗎？
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    服務時間非常彈性，可以根據個人時間安排選擇合適的服務項目。
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    需要繳交費用嗎？
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    不需要繳交任何費用，但部分活動可能需要自行負擔交通費用。
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // FAQ 展開/收合
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentElement;
+                item.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

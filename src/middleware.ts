@@ -11,6 +11,7 @@ const publicPaths = [
   '/',
   '/about',
   '/donation',
+  '/volunteer',
   '/api/auth/callback',
   '/api/auth/providers',
 ];

@@ -6,6 +6,29 @@ export interface UserInfo {
   chinese_name?: string;
 }
 
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
+// 驗證 JWT Token
+export async function verifyJwtToken(token: string | undefined): Promise<boolean> {
+  if (!token) return false;
+  
+  try {
+    // 基本的 token 格式驗證
+    const parts = token.split('.');
+    if (parts.length !== 3) return false;
+
+    // 檢查是否過期
+    const payload = JSON.parse(atob(parts[1]));
+    const exp = payload.exp;
+    if (!exp || Date.now() >= exp * 1000) return false;
+
+    return true;
+  } catch (error) {
+    console.error('JWT verification failed:', error);
+    return false;
+  }
+}
+
 // 檢查是否有 auth token
 export function hasAuthToken(): boolean {
   try {

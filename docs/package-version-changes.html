@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>套件版本變更記錄</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2C5282;
+            border-bottom: 2px solid #E2E8F0;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2D3748;
+            margin-top: 30px;
+        }
+        .version-change {
+            background-color: #F7FAFC;
+            border-left: 4px solid #4299E1;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .conflict {
+            background-color: #FFF5F5;
+            border-left: 4px solid #F56565;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .resolution {
+            background-color: #F0FFF4;
+            border-left: 4px solid #48BB78;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        code {
+            background-color: #EDF2F7;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .date {
+            color: #718096;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>套件版本變更記錄</h1>
+        <div class="date">更新日期：2024-02-21</div>
+
+        <h2>版本衝突問題</h2>
+        <div class="conflict">
+            <h3>發現的衝突：</h3>
+            <ul>
+                <li><code>googletrans 3.0.0</code> 需要 <code>httpx==0.13.3</code>，但安裝的是 <code>httpx 0.27.2</code></li>
+                <li><code>mediapipe 0.9.1.0</code> 需要 <code>protobuf&lt;4,>=3.11</code>，但安裝的是 <code>protobuf 4.22.1</code></li>
+                <li><code>open-clip-torch 2.16.0</code> 需要 <code>protobuf&lt;4</code>，但安裝的是 <code>protobuf 4.22.1</code></li>
+            </ul>
+        </div>
+
+        <h2>解決方案</h2>
+        <div class="resolution">
+            <h3>已執行的更改：</h3>
+            <ul>
+                <li>降級 <code>protobuf</code> 到 3.20.3 以支援 <code>mediapipe</code> 和 <code>open-clip-torch</code></li>
+                <li>更新 <code>httpx</code> 到最新版本以支援 <code>openai</code> 和 <code>zhipuai</code></li>
+                <li>移除 <code>googletrans</code> 並安裝 <code>py-googletrans</code></li>
+            </ul>
+        </div>
+
+        <h2>React 相關套件更新</h2>
+        <div class="version-change">
+            <h3>套件版本更改：</h3>
+            <ul>
+                <li><code>react</code>: 19.0.0-rc-66855b96-20241106 → ^18.2.0</li>
+                <li><code>react-dom</code>: 19.0.0-rc-66855b96-20241106 → ^18.2.0</li>
+                <li><code>@emotion/react</code>: ^11.13.5 → ^11.11.3</li>
+                <li><code>@emotion/styled</code>: ^11.13.5 → ^11.11.0</li>
+                <li><code>@mui/material</code>: ^6.1.9 → ^5.15.11</li>
+            </ul>
+        </div>
+
+        <h2>注意事項</h2>
+        <div class="version-change">
+            <ul>
+                <li>若使用 <code>grpcio-status</code> 相關功能，請特別測試，因為它需要較新版本的 <code>protobuf</code></li>
+                <li>已將 React 相關套件更新到穩定版本，避免使用 RC（候選發布）版本可能帶來的不穩定性</li>
+                <li>如遇到任何功能異常，請回報問題</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

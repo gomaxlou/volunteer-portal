@@ -3,1028 +3,314 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>寶島志工服務團 - 專案結構說明文件</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>寶島志工服務系統 - 專案結構說明</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
-        
+        :root {
+            --primary-color: #2C5282;
+            --secondary-color: #4299E1;
+            --background-color: #F7FAFC;
+            --text-color: #2D3748;
+            --border-color: #E2E8F0;
+            --hover-color: #EBF8FF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Noto Sans TC', sans-serif;
             line-height: 1.6;
-            color: #333;
+            color: var(--text-color);
+            background-color: var(--background-color);
         }
 
-        .directory-tree {
-            margin: 1.5rem 0;
-            padding: 1.5rem;
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .tree-item {
-            margin: 0.75rem 0;
-            padding-left: 2rem;
-            position: relative;
-            transition: all 0.2s ease;
-        }
-
-        .tree-item::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 1px;
-            background: #e2e8f0;
-        }
-
-        .tree-item:last-child::before {
-            height: 50%;
-        }
-
-        .tree-item::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 50%;
-            width: 1.5rem;
-            height: 1px;
-            background: #e2e8f0;
-        }
-
-        .folder-icon {
-            color: #4f46e5;
-            margin-right: 0.75rem;
-        }
-
-        .file-icon {
-            color: #6b7280;
-            margin-right: 0.75rem;
-        }
-
-        .folder-content {
-            display: none;
-            margin-left: 1.5rem;
-            padding-top: 0.5rem;
-        }
-
-        .folder-content.show {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .folder-toggle {
-            cursor: pointer;
-            user-select: none;
-            display: flex;
-            align-items: center;
-            padding: 0.5rem;
-            border-radius: 6px;
-            transition: background-color 0.2s ease;
-        }
-
-        .folder-toggle:hover {
-            background-color: #f3f4f6;
-            color: #4f46e5;
-        }
-
-        .file-description {
-            font-size: 0.9rem;
-            color: #4b5563;
-            margin-left: 2.5rem;
-            margin-top: 0.5rem;
-            margin-bottom: 0.5rem;
-            padding: 0.75rem 1rem;
-            background: #f8fafc;
-            border-radius: 8px;
-            border-left: 3px solid #4f46e5;
-            display: none;
-            line-height: 1.6;
-        }
-
-        .file-description.show {
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-10px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .tag {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-left: 0.75rem;
-            transition: all 0.2s ease;
-        }
-
-        .tag.api { 
-            background-color: #e0e7ff; 
-            color: #4338ca; 
-        }
-        .tag.component { 
-            background-color: #dcfce7; 
-            color: #15803d; 
-        }
-        .tag.config { 
-            background-color: #fef3c7; 
-            color: #92400e; 
-        }
-        .tag.db { 
-            background-color: #f3e8ff; 
-            color: #6d28d9; 
-        }
-
-        .search-box {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            margin: 1.5rem 0;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.2s ease;
-            background-color: #ffffff;
-        }
-
-        .search-box:focus {
-            outline: none;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-
-        .highlight {
-            background-color: #fef08a;
-            padding: 0.125rem 0.25rem;
-            border-radius: 4px;
-        }
-
-        .file-link {
-            color: #4f46e5;
-            text-decoration: none;
-            border-bottom: 1px dashed #4f46e5;
-            transition: all 0.2s ease;
-        }
-
-        .file-link:hover {
-            color: #4338ca;
-            border-bottom-style: solid;
-        }
-
-        .related-files {
-            margin-top: 0.75rem;
-            padding: 0.75rem 1rem;
-            background: #f8fafc;
-            border-left: 3px solid #4f46e5;
-            border-radius: 0 8px 8px 0;
-            font-size: 0.9rem;
-        }
-
-        .related-files h4 {
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-
-        .related-files ul {
-            margin: 0;
-            padding-left: 1.5rem;
-            list-style-type: none;
-        }
-
-        .related-files li {
-            margin: 0.375rem 0;
-            position: relative;
-        }
-
-        .related-files li::before {
-            content: "•";
-            color: #4f46e5;
-            position: absolute;
-            left: -1rem;
-        }
-
-        @media print {
-            .directory-tree {
-                break-inside: avoid;
-            }
-            
-            .folder-content {
-                display: block !important;
-            }
-            
-            .file-description {
-                display: block !important;
-                break-inside: avoid;
-            }
-        }
-
-        .page-structure {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 2rem;
         }
 
-        .structure-section {
+        .header {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 2rem;
         }
 
-        .structure-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1f2937;
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
             margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #e5e7eb;
         }
 
-        .page-list {
-            display: grid;
-            gap: 1.5rem;
+        .date {
+            color: #718096;
+            font-size: 0.9rem;
         }
 
-        .page-item {
-            background: #f8fafc;
-            border-radius: 8px;
+        .search-container {
+            margin: 2rem 0;
+        }
+
+        .search-input {
+            width: 100%;
             padding: 1rem;
-            border-left: 3px solid #4f46e5;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
 
-        .page-path {
-            display: inline-block;
+        .search-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+        }
+
+        .section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .directory-tree {
             font-family: monospace;
-            font-size: 0.9rem;
-            color: #4f46e5;
-            background: #e0e7ff;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            margin-right: 0.5rem;
+            white-space: pre;
+            background-color: #1a202c;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            line-height: 1.4;
         }
 
-        .page-name {
-            font-weight: 500;
-            color: #1f2937;
+        .module-list {
+            list-style: none;
         }
 
-        .page-desc {
-            margin-top: 0.5rem;
-            color: #4b5563;
-            font-size: 0.9rem;
+        .module-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
         }
 
-        .page-desc ul {
-            margin: 0.5rem 0 0 1.25rem;
-            list-style-type: disc;
+        .module-item:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
         }
 
-        .page-desc li {
-            margin: 0.25rem 0;
+        .module-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
         }
 
-        @media (max-width: 640px) {
-            .page-structure {
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .tech-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .tech-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .tech-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .tech-list {
+            list-style: none;
+        }
+
+        .tech-list li {
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .tech-list li::before {
+            content: "•";
+            color: var(--secondary-color);
+            position: absolute;
+            left: 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
                 padding: 1rem;
             }
 
-            .page-list {
-                gap: 1rem;
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            .tech-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
-<body class="bg-white">
-    <div class="container mx-auto px-4 py-8 max-w-5xl">
-        <h1 class="text-4xl font-bold mb-4">專案結構說明文件</h1>
-        <p class="text-gray-600 mb-8">版本 1.0.0 | 最後更新：2024年1月</p>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>專案結構說明</h1>
+            <div class="date">最後更新：2024/12/03</div>
+        </header>
 
-        <div class="mb-8">
-            <input type="text" class="search-box" placeholder="搜尋檔案或目錄..." id="searchInput">
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="搜尋檔案或目錄..." id="searchInput">
         </div>
 
-        <div class="mb-8">
-            <button class="bg-blue-500 text-white px-4 py-2 rounded mr-2" onclick="expandAll()">
-                展開全部
-            </button>
-            <button class="bg-gray-500 text-white px-4 py-2 rounded" onclick="collapseAll()">
-                收合全部
-            </button>
-        </div>
+        <section class="section">
+            <h2>目錄結構</h2>
+            <div class="directory-tree">
+volunteer-portal/
+├── src/
+│   ├── app/
+│   │   ├── about/            # 關於我們頁面
+│   │   ├── api/             # API 路由
+│   │   ├── contact/         # 聯絡我們頁面
+│   │   ├── donation/        # 捐款頁面
+│   │   ├── events/          # 活動管理
+│   │   ├── gallery/         # 相簿功能
+│   │   ├── login/           # 登入頁面
+│   │   ├── news/            # 最新消息
+│   │   ├── reports/         # 報告管理
+│   │   ├── trips/           # 旅程規劃
+│   │   └── volunteer/       # 志工管理
+│   ├── components/          # 共用元件
+│   ├── lib/                 # 工具函式庫
+│   ├── styles/              # 樣式檔案
+│   └── types/              # TypeScript 型別定義
+├── public/                 # 靜態資源
+├── docs/                   # 文件
+│   ├── api_documentation.html    # API 文檔
+│   ├── database_operations.html  # 資料庫操作說明
+│   ├── event_management.html     # 活動管理功能說明
+│   ├── gallery_features.html     # 相簿功能說明
+│   ├── manual.html              # 使用手冊
+│   ├── package-version-changes.html  # 套件版本變更記錄
+│   ├── project_history.html     # 專案歷史
+│   ├── project_structure.html   # 專案結構說明
+│   ├── technical_flow.html      # 功能流程說明
+│   └── test_checklist.html      # 測試檢查清單
+└── tests/                  # 測試檔案
+    ├── unit/              # 單元測試
+    ├── integration/       # 整合測試
+    └── e2e/              # 端對端測試</div>
+        </section>
 
-        <div class="directory-tree">
-            <div class="tree-item">
-                <span class="folder-toggle" onclick="toggleFolder(this)">
-                    <i class="fas fa-folder folder-icon"></i>
-                    <strong>專案根目錄</strong>
-                </span>
-                <div class="folder-content">
-                    <!-- 配置文件 -->
-                    <div class="tree-item">
-                        <span class="file-item" onclick="toggleDescription(this)">
-                            <i class="fas fa-file file-icon"></i>
-                            package.json
-                        </span>
-                        <div class="file-description">
-                            專案配置文件，定義了：
-                            - 專案依賴項及其版本
-                            - 開發和部署腳本
-                            - 專案基本信息
-                            - 開發工具配置
-                        </div>
-                    </div>
-                    <div class="tree-item">
-                        <span class="file-item" onclick="toggleDescription(this)">
-                            <i class="fas fa-file file-icon"></i>
-                            next.config.js
-                        </span>
-                        <div class="file-description">
-                            Next.js 框架配置文件，包含：
-                            - 路由重寫規則
-                            - 環境變數配置
-                            - 圖片優化設置
-                            - API 路由配置
-                        </div>
-                    </div>
-                    <div class="tree-item">
-                        <span class="file-item" onclick="toggleDescription(this)">
-                            <i class="fas fa-file file-icon"></i>
-                            tsconfig.json
-                        </span>
-                        <div class="file-description">
-                            TypeScript 配置文件，定義：
-                            - 編譯選項
-                            - 模組解析規則
-                            - 類型檢查設置
-                            - 路徑別名配置
-                        </div>
-                    </div>
-                    <div class="tree-item">
-                        <span class="file-item" onclick="toggleDescription(this)">
-                            <i class="fas fa-file file-icon"></i>
-                            tailwind.config.js
-                        </span>
-                        <div class="file-description">
-                            Tailwind CSS 配置文件，包含：
-                            - 自定義主題設置
-                            - 顏色方案定義
-                            - 響應式斷點配置
-                            - 自定義插件設置
-                        </div>
-                    </div>
+        <section class="section">
+            <h2>主要功能模組</h2>
+            <ul class="module-list">
+                <li class="module-item">
+                    <div class="module-title">活動管理（/events）</div>
+                    <ul>
+                        <li>活動建立與編輯</li>
+                        <li>報名管理</li>
+                        <li>活動執行追蹤</li>
+                        <li>結案報告</li>
+                    </ul>
+                </li>
+                <li class="module-item">
+                    <div class="module-title">相簿功能（/gallery）</div>
+                    <ul>
+                        <li>照片上傳與管理</li>
+                        <li>相簿分類</li>
+                        <li>照片瀏覽</li>
+                        <li>分享功能</li>
+                    </ul>
+                </li>
+                <li class="module-item">
+                    <div class="module-title">志工管理（/volunteer）</div>
+                    <ul>
+                        <li>志工資料管理</li>
+                        <li>服務時數統計</li>
+                        <li>證書管理</li>
+                    </ul>
+                </li>
+                <li class="module-item">
+                    <div class="module-title">報告系統（/reports）</div>
+                    <ul>
+                        <li>活動報告生成</li>
+                        <li>統計分析</li>
+                        <li>資料匯出</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
 
-                    <!-- src 目錄 -->
-                    <div class="tree-item">
-                        <span class="folder-toggle" onclick="toggleFolder(this)">
-                            <i class="fas fa-folder folder-icon"></i>
-                            src/
-                        </span>
-                        <div class="folder-content">
-                            <!-- app 目錄 -->
-                            <div class="tree-item">
-                                <span class="folder-toggle" onclick="toggleFolder(this)">
-                                    <i class="fas fa-folder folder-icon"></i>
-                                    app/
-                                </span>
-                                <div class="folder-content">
-                                    <div class="file-description">
-                                        Next.js 13+ 的頁面路由目錄，包含所有頁面組件和路由配置。
-                                    </div>
-                                    <div class="tree-item">
-                                        <span class="folder-toggle" onclick="toggleFolder(this)">
-                                            <i class="fas fa-folder folder-icon"></i>
-                                            api/
-                                        </span>
-                                        <div class="folder-content">
-                                            <div class="file-description">
-                                                API 路由處理目錄，包含所有後端 API 端點的實現。
-                                            </div>
-                                            <div class="tree-item">
-                                                <span class="file-item" onclick="toggleDescription(this)">
-                                                    <i class="fas fa-file file-icon"></i>
-                                                    auth/route.ts
-                                                </span>
-                                                <div class="file-description">
-                                                    處理用戶認證相關的 API 請求，包括登入、註冊等功能。
-                                                </div>
-                                            </div>
-                                            <div class="tree-item">
-                                                <span class="file-item" onclick="toggleDescription(this)">
-                                                    <i class="fas fa-file file-icon"></i>
-                                                    events/route.ts
-                                                </span>
-                                                <div class="file-description">
-                                                    處理活動相關的 API 請求，包括創建、更新、刪除活動等功能。
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tree-item">
-                                        <span class="folder-toggle" onclick="toggleFolder(this)">
-                                            <i class="fas fa-folder folder-icon"></i>
-                                            about/
-                                        </span>
-                                        <div class="folder-content">
-                                            <div class="file-description">
-                                                關於我們頁面，介紹組織理念和目標。
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tree-item">
-                                        <span class="folder-toggle" onclick="toggleFolder(this)">
-                                            <i class="fas fa-folder folder-icon"></i>
-                                            reports/
-                                        </span>
-                                        <div class="folder-content">
-                                            <div class="file-description">
-                                                報表和統計功能相關頁面。
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tree-item">
-                                        <span class="file-item" onclick="toggleDescription(this)">
-                                            <i class="fas fa-file file-icon"></i>
-                                            layout.tsx
-                                        </span>
-                                        <div class="file-description">
-                                            Next.js 根布局組件，定義了整個應用的基本結構和共享元素。
-                                        </div>
-                                    </div>
-                                    <div class="tree-item">
-                                        <span class="file-item" onclick="toggleDescription(this)">
-                                            <i class="fas fa-file file-icon"></i>
-                                            page.tsx
-                                        </span>
-                                        <div class="file-description">
-                                            首頁組件，展示主要功能和最新活動。
-                                        </div>
-                                    </div>
-                                    <div class="tree-item">
-                                        <span class="folder-toggle" onclick="toggleFolder(this)">
-                                            <i class="fas fa-folder folder-icon"></i>
-                                            events/
-                                        </span>
-                                        <div class="folder-content">
-                                            <div class="file-description">
-                                                活動管理相關的頁面，包含列表、詳情、編輯等功能。
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tree-item">
-                                        <span class="folder-toggle" onclick="toggleFolder(this)">
-                                            <i class="fas fa-folder folder-icon"></i>
-                                            auth/
-                                        </span>
-                                        <div class="folder-content">
-                                            <div class="file-description">
-                                                使用者認證相關頁面，包含登入、註冊等功能。
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- components 目錄 -->
-                            <div class="tree-item">
-                                <span class="folder-toggle" onclick="toggleFolder(this)">
-                                    <i class="fas fa-folder folder-icon"></i>
-                                    components/
-                                </span>
-                                <div class="folder-content">
-                                    <div class="tree-item">
-                                        <span class="folder-toggle" onclick="toggleFolder(this)">
-                                            <i class="fas fa-folder folder-icon"></i>
-                                            features/
-                                        </span>
-                                        <div class="folder-content">
-                                            <div class="file-description">
-                                                功能性組件，實現特定業務邏輯的UI組件。
-                                            </div>
-                                            <div class="tree-item">
-                                                <span class="file-item" onclick="toggleDescription(this)">
-                                                    <i class="fas fa-file file-icon"></i>
-                                                    EventCard.tsx
-                                                </span>
-                                                <div class="file-description">
-                                                    活動卡片組件，用於展示活動概要信息。
-                                                </div>
-                                            </div>
-                                            <div class="tree-item">
-                                                <span class="file-item" onclick="toggleDescription(this)">
-                                                    <i class="fas fa-file file-icon"></i>
-                                                    EventForm.tsx
-                                                </span>
-                                                <div class="file-description">
-                                                    活動表單組件，用於創建和編輯活動。
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tree-item">
-                                        <span class="folder-toggle" onclick="toggleFolder(this)">
-                                            <i class="fas fa-folder folder-icon"></i>
-                                            layout/
-                                        </span>
-                                        <div class="folder-content">
-                                            <div class="file-description">
-                                                布局相關組件，包括頁頭、頁尾、導航欄等。
-                                            </div>
-                                            <div class="tree-item">
-                                                <span class="file-item" onclick="toggleDescription(this)">
-                                                    <i class="fas fa-file file-icon"></i>
-                                                    Header.tsx
-                                                </span>
-                                                <div class="file-description">
-                                                    頁面頂部導航欄組件，包含logo和主要導航鏈接。
-                                                </div>
-                                            </div>
-                                            <div class="tree-item">
-                                                <span class="file-item" onclick="toggleDescription(this)">
-                                                    <i class="fas fa-file file-icon"></i>
-                                                    Footer.tsx
-                                                </span>
-                                                <div class="file-description">
-                                                    頁面底部組件，包含聯繫方式和相關鏈接。
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tree-item">
-                                        <span class="folder-toggle" onclick="toggleFolder(this)">
-                                            <i class="fas fa-folder folder-icon"></i>
-                                            shared/
-                                        </span>
-                                        <div class="folder-content">
-                                            <div class="file-description">
-                                                共用UI組件，如按鈕、輸入框等基礎組件。
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- lib 目錄 -->
-                            <div class="tree-item">
-                                <span class="folder-toggle" onclick="toggleFolder(this)">
-                                    <i class="fas fa-folder folder-icon"></i>
-                                    lib/
-                                </span>
-                                <div class="folder-content">
-                                    <div class="tree-item">
-                                        <span class="folder-toggle" onclick="toggleFolder(this)">
-                                            <i class="fas fa-folder folder-icon"></i>
-                                            db/
-                                        </span>
-                                        <div class="folder-content">
-                                            <div class="tree-item">
-                                                <span class="file-item" onclick="toggleDescription(this)">
-                                                    <i class="fas fa-file file-icon"></i>
-                                                    events.ts
-                                                    <span class="tag db">Database</span>
-                                                </span>
-                                                <div class="file-description">
-                                                    活動相關的資料庫操作函數和類型定義。
-                                                    <div class="related-files">
-                                                        <h4>相關檔案：</h4>
-                                                        <ul>
-                                                            <li><span class="file-link" onclick="highlightFile('src/lib/dbOperations.ts')">dbOperations.ts</span> - 基礎資料庫操作</li>
-                                                            <li><span class="file-link" onclick="highlightFile('src/app/events/[id]/edit/page.tsx')">edit/page.tsx</span> - 活動編輯頁面</li>
-                                                            <li><span class="file-link" onclick="highlightFile('docs/technical_flow.html')">technical_flow.html</span> - 資料庫結構文檔</li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="tree-item">
-                                                <span class="file-item" onclick="toggleDescription(this)">
-                                                    <i class="fas fa-file file-icon"></i>
-                                                    users.ts
-                                                    <span class="tag db">Database</span>
-                                                </span>
-                                                <div class="file-description">
-                                                    用戶相關的資料庫操作函數和類型定義。
-                                                    <div class="related-files">
-                                                        <h4>相關檔案：</h4>
-                                                        <ul>
-                                                            <li><span class="file-link" onclick="highlightFile('src/lib/auth.ts')">auth.ts</span> - 認證相關功能</li>
-                                                            <li><span class="file-link" onclick="highlightFile('src/lib/dbOperations.ts')">dbOperations.ts</span> - 基礎資料庫操作</li>
-                                                            <li><span class="file-link" onclick="highlightFile('docs/technical_flow.html')">technical_flow.html</span> - 資料庫結構文檔</li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tree-item">
-                                        <span class="file-item" onclick="toggleDescription(this)">
-                                            <i class="fas fa-file file-icon"></i>
-                                            auth.ts
-                                            <span class="tag api">Auth</span>
-                                        </span>
-                                        <div class="file-description">
-                                            認證相關的核心功能，包括登入、註冊、權限驗證等。
-                                            <div class="related-files">
-                                                <h4>相關檔案：</h4>
-                                                <ul>
-                                                    <li><span class="file-link" onclick="highlightFile('src/lib/db/users.ts')">users.ts</span> - 用戶資料庫操作</li>
-                                                    <li><span class="file-link" onclick="highlightFile('src/app/api/auth/route.ts')">api/auth/route.ts</span> - 認證 API 端點</li>
-                                                    <li><span class="file-link" onclick="highlightFile('src/middleware.ts')">middleware.ts</span> - 認證中間件</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tree-item">
-                                        <span class="file-item" onclick="toggleDescription(this)">
-                                            <i class="fas fa-file file-icon"></i>
-                                            dbOperations.ts
-                                            <span class="tag db">Database</span>
-                                        </span>
-                                        <div class="file-description">
-                                            資料庫操作的核心功能，包含所有資料庫交互的基礎實現。
-                                            <div class="related-files">
-                                                <h4>相關檔案：</h4>
-                                                <ul>
-                                                    <li><span class="file-link" onclick="highlightFile('src/lib/db/events.ts')">events.ts</span> - 活動資料庫操作</li>
-                                                    <li><span class="file-link" onclick="highlightFile('src/lib/db/users.ts')">users.ts</span> - 用戶資料庫操作</li>
-                                                    <li><span class="file-link" onclick="highlightFile('docs/technical_flow.html')">technical_flow.html</span> - 資料庫結構文檔</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tree-item">
-                                        <span class="file-item" onclick="toggleDescription(this)">
-                                            <i class="fas fa-file file-icon"></i>
-                                            constants.ts
-                                        </span>
-                                        <div class="file-description">
-                                            全域常數定義，包括配置項、狀態碼等。
-                                        </div>
-                                    </div>
-                                    <div class="tree-item">
-                                        <span class="file-item" onclick="toggleDescription(this)">
-                                            <i class="fas fa-file file-icon"></i>
-                                            types.ts
-                                        </span>
-                                        <div class="file-description">
-                                            全域類型定義，包括共用介面和類型。
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- types 目錄 -->
-                            <div class="tree-item">
-                                <span class="folder-toggle" onclick="toggleFolder(this)">
-                                    <i class="fas fa-folder folder-icon"></i>
-                                    types/
-                                </span>
-                                <div class="folder-content">
-                                    <div class="file-description">
-                                        TypeScript 類型定義文件。
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- public 目錄詳細內容 -->
-                    <div class="tree-item">
-                        <span class="folder-toggle" onclick="toggleFolder(this)">
-                            <i class="fas fa-folder folder-icon"></i>
-                            public/
-                        </span>
-                        <div class="folder-content">
-                            <div class="tree-item">
-                                <span class="folder-toggle" onclick="toggleFolder(this)">
-                                    <i class="fas fa-folder folder-icon"></i>
-                                    images/
-                                </span>
-                                <div class="folder-content">
-                                    <div class="file-description">
-                                        靜態圖片資源目錄，包含網站所需的所有圖片。
-                                    </div>
-                                    <div class="tree-item">
-                                        <span class="file-item" onclick="toggleDescription(this)">
-                                            <i class="fas fa-file file-icon"></i>
-                                            default-event.jpg
-                                        </span>
-                                        <div class="file-description">
-                                            活動的預設圖片，當活動沒有上傳圖片時使用。
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tree-item">
-                                <span class="folder-toggle" onclick="toggleFolder(this)">
-                                    <i class="fas fa-folder folder-icon"></i>
-                                    icons/
-                                </span>
-                                <div class="folder-content">
-                                    <div class="file-description">
-                                        網站使用的圖標文件目錄。
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- scripts 目錄詳細內容 -->
-                    <div class="tree-item">
-                        <span class="folder-toggle" onclick="toggleFolder(this)">
-                            <i class="fas fa-folder folder-icon"></i>
-                            scripts/
-                        </span>
-                        <div class="folder-content">
-                            <div class="tree-item">
-                                <span class="file-item" onclick="toggleDescription(this)">
-                                    <i class="fas fa-file file-icon"></i>
-                                    db-init.ts
-                                </span>
-                                <div class="file-description">
-                                    資料庫初始化腳本，用於創建資料庫表格和初始數據。
-                                </div>
-                            </div>
-                            <div class="tree-item">
-                                <span class="file-item" onclick="toggleDescription(this)">
-                                    <i class="fas fa-file file-icon"></i>
-                                    seed.ts
-                                </span>
-                                <div class="file-description">
-                                    測試數據生成腳本，用於填充測試環境的示例數據。
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 資料庫文件 -->
-                    <div class="tree-item">
-                        <span class="file-item" onclick="toggleDescription(this)">
-                            <i class="fas fa-file file-icon"></i>
-                            volunteer.db
-                        </span>
-                        <div class="file-description">
-                            SQLite 資料庫文件，儲存所有應用數據：
-                            - 用戶資料
-                            - 活動信息
-                            - 報名記錄
-                            - 系統配置
-                        </div>
-                    </div>
-
-                    <!-- docs 目錄 -->
-                    <div class="tree-item">
-                        <span class="folder-toggle" onclick="toggleFolder(this)">
-                            <i class="fas fa-folder folder-icon"></i>
-                            docs/
-                        </span>
-                        <div class="folder-content">
-                            <div class="file-description">
-                                專案文檔目錄，包含技術文檔和使用說明。
-                            </div>
-                            <div class="tree-item">
-                                <span class="file-item" onclick="toggleDescription(this)">
-                                    <i class="fas fa-file file-icon"></i>
-                                    project_structure.html
-                                </span>
-                                <div class="file-description">
-                                    專案結構說明文件，描述專案目錄結構和相關檔案。
-                                </div>
-                            </div>
-                            <div class="tree-item">
-                                <span class="file-item" onclick="toggleDescription(this)">
-                                    <i class="fas fa-file file-icon"></i>
-                                    technical_flow.html
-                                </span>
-                                <div class="file-description">
-                                    技術流程文檔，描述系統的技術實現和流程。
-                                </div>
-                            </div>
-                            <div class="tree-item">
-                                <span class="file-item" onclick="toggleDescription(this)">
-                                    <i class="fas fa-file file-icon"></i>
-                                    user_manual.html
-                                </span>
-                                <div class="file-description">
-                                    使用者手冊，描述系統的使用方法和注意事項。
-                                </div>
-                            </div>
-                            <div class="tree-item">
-                                <span class="file-item" onclick="toggleDescription(this)">
-                                    <i class="fas fa-file file-icon"></i>
-                                    faq.html
-                                </span>
-                                <div class="file-description">
-                                    常見問題解答，描述系統的常見問題和解決方法。
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- scripts 目錄 -->
-                    <div class="tree-item">
-                        <span class="folder-toggle" onclick="toggleFolder(this)">
-                            <i class="fas fa-folder folder-icon"></i>
-                            scripts/
-                        </span>
-                        <div class="folder-content">
-                            <div class="file-description">
-                                工具腳本目錄，包含資料庫遷移、測試等腳本。
-                            </div>
-                        </div>
-                    </div>
+        <section class="section">
+            <h2>技術堆疊</h2>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h3>前端框架</h3>
+                    <ul class="tech-list">
+                        <li>Next.js 15.0.3</li>
+                        <li>React 18.2.0</li>
+                        <li>TypeScript 5.x</li>
+                        <li>Tailwind CSS</li>
+                        <li>MUI 5.x</li>
+                    </ul>
+                </div>
+                <div class="tech-card">
+                    <h3>後端技術</h3>
+                    <ul class="tech-list">
+                        <li>Python 3.10</li>
+                        <li>FastAPI</li>
+                        <li>SQLAlchemy</li>
+                    </ul>
+                </div>
+                <div class="tech-card">
+                    <h3>資料庫</h3>
+                    <ul class="tech-list">
+                        <li>PostgreSQL</li>
+                        <li>Redis（快取）</li>
+                    </ul>
+                </div>
+                <div class="tech-card">
+                    <h3>開發工具</h3>
+                    <ul class="tech-list">
+                        <li>Git</li>
+                        <li>Docker</li>
+                        <li>VS Code</li>
+                    </ul>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
-
-    <div class="mb-8">
-        <h2 class="text-2xl font-bold mb-4">頁面結構</h2>
-        <div class="page-structure">
-            <div class="structure-section">
-                <h3 class="section-title">公開頁面</h3>
-                <div class="page-list">
-                    <div class="page-item">
-                        <span class="page-path">/</span>
-                        <span class="page-name">首頁</span>
-                        <div class="page-desc">展示志工服務概況、提供快速導航到各功能區</div>
-                    </div>
-                    
-                    <div class="page-item">
-                        <span class="page-path">/login</span>
-                        <span class="page-name">登入頁面</span>
-                        <div class="page-desc">用戶認證、權限管理</div>
-                    </div>
-                    
-                    <div class="page-item">
-                        <span class="page-path">/reports</span>
-                        <span class="page-name">報告頁面</span>
-                        <div class="page-desc">
-                            <ul>
-                                <li>志工服務統計報告</li>
-                                <li>支援 PDF 下載功能</li>
-                                <li>自動分頁處理</li>
-                                <li>支援中文字體</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="page-item">
-                        <span class="page-path">/donation</span>
-                        <span class="page-name">捐款頁面</span>
-                        <div class="page-desc">
-                            <ul>
-                                <li>捐款資訊</li>
-                                <li>捐款方式說明</li>
-                                <li>權限管理</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="page-item">
-                        <span class="page-path">/about</span>
-                        <span class="page-name">關於我們</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="structure-section">
-                <h3 class="section-title">需要登入訪問</h3>
-                <div class="page-list">
-                    <div class="page-item">
-                        <span class="page-path">/events/*</span>
-                        <span class="page-name">活動管理</span>
-                        <div class="page-desc">
-                            <ul>
-                                <li>活動列表</li>
-                                <li>活動詳情</li>
-                                <li>報名功能</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="page-item">
-                        <span class="page-path">/users/*</span>
-                        <span class="page-name">用戶管理</span>
-                    </div>
-                    
-                    <div class="page-item">
-                        <span class="page-path">/admin/*</span>
-                        <span class="page-name">管理面板</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function toggleFolder(element) {
-            const content = element.nextElementSibling;
-            content.classList.toggle('show');
-            const icon = element.querySelector('.fa-folder');
-            icon.classList.toggle('fa-folder-open');
-        }
-
-        function toggleDescription(element) {
-            const description = element.nextElementSibling;
-            description.classList.toggle('show');
-        }
-
-        function expandAll() {
-            document.querySelectorAll('.folder-content').forEach(el => el.classList.add('show'));
-            document.querySelectorAll('.file-description').forEach(el => el.classList.add('show'));
-            document.querySelectorAll('.fa-folder').forEach(el => el.classList.add('fa-folder-open'));
-        }
-
-        function collapseAll() {
-            document.querySelectorAll('.folder-content').forEach(el => el.classList.remove('show'));
-            document.querySelectorAll('.file-description').forEach(el => el.classList.remove('show'));
-            document.querySelectorAll('.fa-folder').forEach(el => el.classList.remove('fa-folder-open'));
-        }
-
-        function searchFiles() {
-            const searchText = document.getElementById('searchInput').value.toLowerCase();
-            const treeItems = document.querySelectorAll('.tree-item');
-            
-            treeItems.forEach(item => {
-                const text = item.textContent.toLowerCase();
-                const hasMatch = text.includes(searchText);
-                
-                if (searchText === '') {
-                    item.style.display = '';
-                    item.innerHTML = item.innerHTML.replace(/<mark class="highlight">/g, '').replace(/<\/mark>/g, '');
-                } else {
-                    if (hasMatch) {
-                        item.style.display = '';
-                        // 展開包含匹配項的資料夾
-                        let parent = item.parentElement;
-                        while (parent && parent.classList.contains('folder-content')) {
-                            parent.classList.add('show');
-                            parent = parent.parentElement.parentElement;
-                        }
-                        // 高亮匹配文字
-                        const regex = new RegExp(searchText, 'gi');
-                        item.innerHTML = item.innerHTML.replace(/<mark class="highlight">/g, '').replace(/<\/mark>/g, '');
-                        item.innerHTML = item.innerHTML.replace(regex, match => `<mark class="highlight">${match}</mark>`);
-                    } else {
-                        item.style.display = 'none';
-                    }
-                }
-            });
-        }
-
-        function highlightFile(filePath) {
-            // 找到對應的檔案項目
-            const fileItems = document.querySelectorAll('.file-item');
-            const searchText = filePath.split('/').pop();
-            
-            fileItems.forEach(item => {
-                if (item.textContent.includes(searchText)) {
-                    // 展開所有父資料夾
-                    let parent = item.parentElement;
-                    while (parent) {
-                        if (parent.classList.contains('folder-content')) {
-                            parent.classList.add('show');
-                            const folderIcon = parent.previousElementSibling.querySelector('.fa-folder');
-                            if (folderIcon) {
-                                folderIcon.classList.add('fa-folder-open');
-                            }
-                        }
-                        parent = parent.parentElement;
-                    }
-                    
-                    // 滾動到該項目
-                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    
-                    // 添加高亮效果
-                    item.classList.add('highlight');
-                    setTimeout(() => {
-                        item.classList.remove('highlight');
-                    }, 2000);
-                    
-                    // 展開描述
-                    const description = item.nextElementSibling;
-                    if (description) {
-                        description.classList.add('show');
-                    }
-                }
-            });
-        }
-
-        document.getElementById('searchInput').addEventListener('input', searchFiles);
-    </script>
 </body>
 </html>

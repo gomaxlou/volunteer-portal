@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寶島志工服務系統 - API 文檔</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans TC', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        h1, h2, h3 {
+            color: #2C5282;
+        }
+        .endpoint {
+            background-color: #F7FAFC;
+            border-left: 4px solid #4299E1;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .get { background-color: #C6F6D5; color: #22543D; }
+        .post { background-color: #E9D8FD; color: #553C9A; }
+        .put { background-color: #FEEBC8; color: #7B341E; }
+        .delete { background-color: #FED7D7; color: #822727; }
+        code {
+            background-color: #EDF2F7;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        pre {
+            background-color: #2D3748;
+            color: #E2E8F0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+        .params {
+            margin: 10px 0;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .params th, .params td {
+            border: 1px solid #E2E8F0;
+            padding: 8px;
+            text-align: left;
+        }
+        .params th {
+            background-color: #F7FAFC;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>API 文檔</h1>
+        <div class="date">最後更新：2024/12/03</div>
+
+        <h2>活動管理 API</h2>
+        
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/events</code>
+            <p>獲取活動列表</p>
+            <h4>查詢參數：</h4>
+            <table class="params">
+                <tr>
+                    <th>參數名</th>
+                    <th>類型</th>
+                    <th>必填</th>
+                    <th>說明</th>
+                </tr>
+                <tr>
+                    <td>page</td>
+                    <td>number</td>
+                    <td>否</td>
+                    <td>頁碼，預設為 1</td>
+                </tr>
+                <tr>
+                    <td>limit</td>
+                    <td>number</td>
+                    <td>否</td>
+                    <td>每頁數量，預設為 10</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <code>/api/events</code>
+            <p>創建新活動</p>
+            <h4>請求體：</h4>
+            <pre>{
+  "title": "string",
+  "description": "string",
+  "startDate": "string (YYYY-MM-DD)",
+  "endDate": "string (YYYY-MM-DD)",
+  "location": "string",
+  "maxParticipants": "number",
+  "contact": {
+    "name": "string",
+    "email": "string",
+    "phone": "string"
+  }
+}</pre>
+        </div>
+
+        <h2>用戶管理 API</h2>
+        
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <code>/api/auth/login</code>
+            <p>用戶登入</p>
+            <h4>請求體：</h4>
+            <pre>{
+  "email": "string",
+  "password": "string"
+}</pre>
+        </div>
+
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <code>/api/auth/register</code>
+            <p>用戶註冊</p>
+            <h4>請求體：</h4>
+            <pre>{
+  "name": "string",
+  "email": "string",
+  "password": "string",
+  "phone": "string"
+}</pre>
+        </div>
+
+        <h2>相簿管理 API</h2>
+        
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/gallery</code>
+            <p>獲取相簿列表</p>
+        </div>
+
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <code>/api/gallery/upload</code>
+            <p>上傳相片</p>
+            <h4>請求體：</h4>
+            <p>使用 FormData 格式</p>
+            <ul>
+                <li>image: File</li>
+                <li>description: string</li>
+                <li>eventId: number</li>
+            </ul>
+        </div>
+
+        <h2>報告管理 API</h2>
+        
+        <div class="endpoint">
+            <span class="method get">GET</span>
+            <code>/api/reports</code>
+            <p>獲取報告列表</p>
+        </div>
+
+        <div class="endpoint">
+            <span class="method post">POST</span>
+            <code>/api/reports/generate</code>
+            <p>生成活動報告</p>
+            <h4>請求體：</h4>
+            <pre>{
+  "eventId": "number",
+  "reportType": "string",
+  "format": "pdf|docx"
+}</pre>
+        </div>
+    </div>
+</body>
+</html>

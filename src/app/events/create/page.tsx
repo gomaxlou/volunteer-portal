@@ -519,12 +519,15 @@ export default function CreateEventPage() {
           <label className="block text-sm font-medium mb-1">
             活動難度
           </label>
-          <input
-            type="text"
+          <select
             name="difficulty"
             className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
-            placeholder="請輸入活動難度"
-          />
+            defaultValue="簡單"
+          >
+            <option value="簡單">簡單</option>
+            <option value="中等">中等</option>
+            <option value="困難">困難</option>
+          </select>
         </div>
 
         <div>

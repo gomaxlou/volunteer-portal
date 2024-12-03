@@ -5,14 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>寶島志工服務系統 - 專案結構說明</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2C5282;
-            --secondary-color: #4299E1;
-            --background-color: #F7FAFC;
-            --text-color: #2D3748;
-            --border-color: #E2E8F0;
-            --hover-color: #EBF8FF;
+            --primary-color: #2563eb;
+            --secondary-color: #3b82f6;
+            --background-color: #f8fafc;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+            --hover-color: #dbeafe;
+            --active-color: #bfdbfe;
+            --folder-color: #3b82f6;
+            --file-color: #64748b;
         }
 
         * {
@@ -35,133 +39,182 @@
         }
 
         .header {
-            background-color: white;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
             padding: 2rem;
             border-radius: 1rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 2rem;
+            text-align: center;
         }
 
         .header h1 {
-            color: var(--primary-color);
             font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .date {
-            color: #718096;
-            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
         }
 
         .search-container {
-            margin: 2rem 0;
+            position: sticky;
+            top: 1rem;
+            z-index: 100;
+            background: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
         }
 
         .search-input {
             width: 100%;
-            padding: 1rem;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
             border: 2px solid var(--border-color);
             border-radius: 0.5rem;
             font-size: 1rem;
             transition: all 0.3s ease;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 0.75rem center;
+            background-size: 1rem;
         }
 
         .search-input:focus {
             outline: none;
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
         }
 
-        .section {
-            background-color: white;
-            padding: 2rem;
+        .directory-container {
+            background: white;
             border-radius: 1rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
+            overflow: hidden;
         }
 
-        .section h2 {
-            color: var(--primary-color);
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
+        .directory-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .directory-tree {
-            font-family: monospace;
-            white-space: pre;
-            background-color: #1a202c;
-            color: #e2e8f0;
+        .directory-content {
             padding: 1.5rem;
+        }
+
+        .tree-item {
+            margin: 0.25rem 0;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .tree-item:hover {
+            background-color: var(--hover-color);
+        }
+
+        .tree-item.active {
+            background-color: var(--active-color);
+        }
+
+        .tree-item i {
+            font-size: 1.25rem;
+        }
+
+        .tree-item.folder i {
+            color: var(--folder-color);
+        }
+
+        .tree-item.file i {
+            color: var(--file-color);
+        }
+
+        .tree-item .comment {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-left: auto;
+        }
+
+        .tree-children {
+            margin-left: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .tree-children::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--border-color);
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 0.5rem;
+        }
+
+        .module-card {
+            background: white;
+            border: 1px solid var(--border-color);
             border-radius: 0.5rem;
-            overflow-x: auto;
-            line-height: 1.4;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .module-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .module-title i {
+            font-size: 1.5rem;
         }
 
         .module-list {
             list-style: none;
+            margin: 0;
+            padding: 0;
         }
 
-        .module-item {
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .module-item:hover {
-            background-color: var(--hover-color);
-            transform: translateY(-2px);
-        }
-
-        .module-title {
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .tech-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .tech-card {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-        }
-
-        .tech-card:hover {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .tech-card h3 {
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-        }
-
-        .tech-list {
-            list-style: none;
-        }
-
-        .tech-list li {
-            margin-bottom: 0.5rem;
-            padding-left: 1rem;
+        .module-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
             position: relative;
         }
 
-        .tech-list li::before {
-            content: "•";
-            color: var(--secondary-color);
+        .module-list li::before {
+            content: '';
             position: absolute;
             left: 0;
+            top: 50%;
+            width: 6px;
+            height: 6px;
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+            transform: translateY(-50%);
         }
 
         @media (max-width: 768px) {
@@ -170,14 +223,14 @@
             }
 
             .header h1 {
-                font-size: 2rem;
+                font-size: 1.75rem;
             }
 
-            .section {
-                padding: 1rem;
+            .tree-children {
+                margin-left: 1rem;
             }
 
-            .tech-grid {
+            .module-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -187,130 +240,311 @@
     <div class="container">
         <header class="header">
             <h1>專案結構說明</h1>
-            <div class="date">最後更新：2024/12/03</div>
+            <p>寶島志工服務系統專案檔案結構與說明</p>
         </header>
 
         <div class="search-container">
             <input type="text" class="search-input" placeholder="搜尋檔案或目錄..." id="searchInput">
         </div>
 
-        <section class="section">
-            <h2>目錄結構</h2>
-            <div class="directory-tree">
-volunteer-portal/
-├── src/
-│   ├── app/
-│   │   ├── about/            # 關於我們頁面
-│   │   ├── api/             # API 路由
-│   │   ├── contact/         # 聯絡我們頁面
-│   │   ├── donation/        # 捐款頁面
-│   │   ├── events/          # 活動管理
-│   │   ├── gallery/         # 相簿功能
-│   │   ├── login/           # 登入頁面
-│   │   ├── news/            # 最新消息
-│   │   ├── reports/         # 報告管理
-│   │   ├── trips/           # 旅程規劃
-│   │   └── volunteer/       # 志工管理
-│   ├── components/          # 共用元件
-│   ├── lib/                 # 工具函式庫
-│   ├── styles/              # 樣式檔案
-│   └── types/              # TypeScript 型別定義
-├── public/                 # 靜態資源
-├── docs/                   # 文件
-│   ├── api_documentation.html    # API 文檔
-│   ├── database_operations.html  # 資料庫操作說明
-│   ├── event_management.html     # 活動管理功能說明
-│   ├── gallery_features.html     # 相簿功能說明
-│   ├── manual.html              # 使用手冊
-│   ├── package-version-changes.html  # 套件版本變更記錄
-│   ├── project_history.html     # 專案歷史
-│   ├── project_structure.html   # 專案結構說明
-│   ├── technical_flow.html      # 功能流程說明
-│   └── test_checklist.html      # 測試檢查清單
-└── tests/                  # 測試檔案
-    ├── unit/              # 單元測試
-    ├── integration/       # 整合測試
-    └── e2e/              # 端對端測試</div>
-        </section>
+        <div class="directory-container">
+            <div class="directory-header">
+                <i class="mdi mdi-folder"></i>
+                <span>專案結構</span>
+            </div>
+            <div class="directory-content" id="directoryTree">
+                <!-- Tree content will be generated by JavaScript -->
+            </div>
+        </div>
 
-        <section class="section">
-            <h2>主要功能模組</h2>
-            <ul class="module-list">
-                <li class="module-item">
-                    <div class="module-title">活動管理（/events）</div>
-                    <ul>
-                        <li>活動建立與編輯</li>
-                        <li>報名管理</li>
-                        <li>活動執行追蹤</li>
-                        <li>結案報告</li>
-                    </ul>
-                </li>
-                <li class="module-item">
-                    <div class="module-title">相簿功能（/gallery）</div>
-                    <ul>
-                        <li>照片上傳與管理</li>
-                        <li>相簿分類</li>
-                        <li>照片瀏覽</li>
-                        <li>分享功能</li>
-                    </ul>
-                </li>
-                <li class="module-item">
-                    <div class="module-title">志工管理（/volunteer）</div>
-                    <ul>
-                        <li>志工資料管理</li>
-                        <li>服務時數統計</li>
-                        <li>證書管理</li>
-                    </ul>
-                </li>
-                <li class="module-item">
-                    <div class="module-title">報告系統（/reports）</div>
-                    <ul>
-                        <li>活動報告生成</li>
-                        <li>統計分析</li>
-                        <li>資料匯出</li>
-                    </ul>
-                </li>
-            </ul>
-        </section>
+        <div class="directory-container" style="margin-top: 2rem;">
+            <div class="directory-header">
+                <i class="mdi mdi-cube-outline"></i>
+                <span>主要功能模組</span>
+            </div>
+            <div class="directory-content">
+                <div class="module-grid">
+                    <div class="module-card">
+                        <div class="module-title">
+                            <i class="mdi mdi-calendar-check"></i>
+                            活動管理 (/events)
+                        </div>
+                        <ul class="module-list">
+                            <li>活動建立與編輯</li>
+                            <li>報名管理</li>
+                            <li>活動執行追蹤</li>
+                            <li>結案報告</li>
+                        </ul>
+                    </div>
 
-        <section class="section">
-            <h2>技術堆疊</h2>
-            <div class="tech-grid">
-                <div class="tech-card">
-                    <h3>前端框架</h3>
-                    <ul class="tech-list">
-                        <li>Next.js 15.0.3</li>
-                        <li>React 18.2.0</li>
-                        <li>TypeScript 5.x</li>
-                        <li>Tailwind CSS</li>
-                        <li>MUI 5.x</li>
-                    </ul>
-                </div>
-                <div class="tech-card">
-                    <h3>後端技術</h3>
-                    <ul class="tech-list">
-                        <li>Python 3.10</li>
-                        <li>FastAPI</li>
-                        <li>SQLAlchemy</li>
-                    </ul>
-                </div>
-                <div class="tech-card">
-                    <h3>資料庫</h3>
-                    <ul class="tech-list">
-                        <li>PostgreSQL</li>
-                        <li>Redis（快取）</li>
-                    </ul>
-                </div>
-                <div class="tech-card">
-                    <h3>開發工具</h3>
-                    <ul class="tech-list">
-                        <li>Git</li>
-                        <li>Docker</li>
-                        <li>VS Code</li>
-                    </ul>
+                    <div class="module-card">
+                        <div class="module-title">
+                            <i class="mdi mdi-image-multiple"></i>
+                            相簿功能 (/gallery)
+                        </div>
+                        <ul class="module-list">
+                            <li>照片上傳與管理</li>
+                            <li>相簿分類</li>
+                            <li>照片瀏覽</li>
+                            <li>分享功能</li>
+                        </ul>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-title">
+                            <i class="mdi mdi-account-group"></i>
+                            志工管理 (/volunteer)
+                        </div>
+                        <ul class="module-list">
+                            <li>志工資料管理</li>
+                            <li>服務時數統計</li>
+                            <li>證書管理</li>
+                        </ul>
+                    </div>
+
+                    <div class="module-card">
+                        <div class="module-title">
+                            <i class="mdi mdi-file-chart"></i>
+                            報告系統 (/reports)
+                        </div>
+                        <ul class="module-list">
+                            <li>活動報告生成</li>
+                            <li>統計分析</li>
+                            <li>資料匯出</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </section>
+        </div>
     </div>
+
+    <script>
+        const treeData = {
+            name: 'volunteer-portal',
+            type: 'folder',
+            children: [
+                {
+                    name: 'src',
+                    type: 'folder',
+                    comment: '源碼目錄',
+                    children: [
+                        {
+                            name: 'app',
+                            type: 'folder',
+                            comment: 'Next.js 應用程式目錄',
+                            children: [
+                                { name: 'about', type: 'folder', comment: '關於我們頁面' },
+                                { name: 'api', type: 'folder', comment: 'API 路由' },
+                                { name: 'contact', type: 'folder', comment: '聯絡我們頁面' },
+                                { name: 'donation', type: 'folder', comment: '捐款頁面' },
+                                { name: 'events', type: 'folder', comment: '活動管理' },
+                                { name: 'fonts', type: 'folder', comment: '字型檔案' },
+                                { name: 'gallery', type: 'folder', comment: '相簿功能' },
+                                { name: 'login', type: 'folder', comment: '登入頁面' },
+                                { name: 'news', type: 'folder', comment: '最新消息' },
+                                { name: 'reports', type: 'folder', comment: '報告管理' },
+                                { name: 'trips', type: 'folder', comment: '旅程規劃' },
+                                { name: 'volunteer', type: 'folder', comment: '志工管理' },
+                                { name: 'favicon.ico', type: 'file', comment: '網站圖標' },
+                                { name: 'globals.css', type: 'file', comment: '全域樣式' },
+                                { name: 'layout.tsx', type: 'file', comment: '主要布局' },
+                                { name: 'page.tsx', type: 'file', comment: '首頁組件' }
+                            ]
+                        },
+                        { name: 'components', type: 'folder', comment: '共用元件' },
+                        { name: 'data', type: 'folder', comment: '資料模型' },
+                        { name: 'lib', type: 'folder', comment: '工具函式庫' },
+                        { name: 'types', type: 'folder', comment: 'TypeScript 型別定義' },
+                        { name: 'utils', type: 'folder', comment: '工具函數' },
+                        { name: 'middleware.ts', type: 'file', comment: 'Next.js 中間件' }
+                    ]
+                },
+                { 
+                    name: 'public', 
+                    type: 'folder', 
+                    comment: '靜態資源',
+                    children: [
+                        { name: 'fonts', type: 'folder', comment: '字型檔案' },
+                        { name: 'images', type: 'folder', comment: '圖片資源' },
+                        { name: 'file.svg', type: 'file', comment: '檔案圖標' },
+                        { name: 'globe.svg', type: 'file', comment: '全球圖標' },
+                        { name: 'line-icon.svg', type: 'file', comment: 'Line 圖標' },
+                        { name: 'logo.png', type: 'file', comment: '網站 Logo' },
+                        { name: 'next.svg', type: 'file', comment: 'Next.js Logo' },
+                        { name: 'placeholder-event.jpg', type: 'file', comment: '活動預設圖片' },
+                        { name: 'vercel.svg', type: 'file', comment: 'Vercel Logo' },
+                        { name: 'window.svg', type: 'file', comment: '視窗圖標' }
+                    ]
+                },
+                {
+                    name: 'docs',
+                    type: 'folder',
+                    comment: '文件',
+                    children: [
+                        { name: 'api_documentation.html', type: 'file', comment: 'API 文檔' },
+                        { name: 'database_operations.html', type: 'file', comment: '資料庫操作說明' },
+                        { name: 'documentation_roadmap.html', type: 'file', comment: '文件規劃' },
+                        { name: 'event_management.html', type: 'file', comment: '活動管理功能說明' },
+                        { name: 'gallery_features.html', type: 'file', comment: '相簿功能說明' },
+                        { name: 'images', type: 'folder', comment: '文件圖片' },
+                        { name: 'manual.html', type: 'file', comment: '使用手冊' },
+                        { name: 'package-version-changes.html', type: 'file', comment: '套件版本變更記錄' },
+                        { name: 'project_history.html', type: 'file', comment: '專案歷史' },
+                        { name: 'project_structure.html', type: 'file', comment: '專案結構說明' },
+                        { name: 'technical_flow.html', type: 'file', comment: '功能流程說明' },
+                        { name: 'test_checklist.html', type: 'file', comment: '測試檢查清單' }
+                    ]
+                },
+                {
+                    name: 'tests',
+                    type: 'folder',
+                    comment: '測試檔案',
+                    children: [
+                        { name: 'unit', type: 'folder', comment: '單元測試' },
+                        { name: 'integration', type: 'folder', comment: '整合測試' },
+                        { name: 'e2e', type: 'folder', comment: '端對端測試' }
+                    ]
+                },
+                {
+                    name: 'scripts',
+                    type: 'folder',
+                    comment: '腳本檔案'
+                },
+                {
+                    name: 'data',
+                    type: 'folder',
+                    comment: '資料庫檔案',
+                    children: [
+                        { name: 'database.sqlite', type: 'file', comment: 'SQLite 資料庫' }
+                    ]
+                },
+                { name: '.eslintrc.json', type: 'file', comment: 'ESLint 配置' },
+                { name: '.gitignore', type: 'file', comment: 'Git 忽略檔案' },
+                { name: 'next-env.d.ts', type: 'file', comment: 'Next.js 環境定義' },
+                { name: 'next.config.js', type: 'file', comment: 'Next.js 配置' },
+                { name: 'next.config.ts', type: 'file', comment: 'Next.js TypeScript 配置' },
+                { name: 'package.json', type: 'file', comment: '專案配置' },
+                { name: 'postcss.config.mjs', type: 'file', comment: 'PostCSS 配置' },
+                { name: 'README.md', type: 'file', comment: '專案說明' },
+                { name: 'tailwind.config.js', type: 'file', comment: 'Tailwind 配置' },
+                { name: 'tailwind.config.ts', type: 'file', comment: 'Tailwind TypeScript 配置' },
+                { name: 'tsconfig.json', type: 'file', comment: 'TypeScript 配置' }
+            ]
+        };
+
+        function createTreeItem(item) {
+            const div = document.createElement('div');
+            div.className = `tree-item ${item.type}`;
+            
+            const icon = document.createElement('i');
+            icon.className = `mdi mdi-${item.type === 'folder' ? 'folder' : 'file-document'}`;
+            
+            const name = document.createElement('span');
+            name.textContent = item.name;
+            
+            div.appendChild(icon);
+            div.appendChild(name);
+            
+            if (item.comment) {
+                const comment = document.createElement('span');
+                comment.className = 'comment';
+                comment.textContent = item.comment;
+                div.appendChild(comment);
+            }
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'tree-item-wrapper';
+            wrapper.appendChild(div);
+            
+            if (item.children) {
+                const childrenContainer = document.createElement('div');
+                childrenContainer.className = 'tree-children';
+                childrenContainer.style.display = 'none';
+                
+                item.children.forEach(child => {
+                    childrenContainer.appendChild(createTreeItem(child));
+                });
+                
+                div.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isExpanded = childrenContainer.style.display !== 'none';
+                    div.classList.toggle('active', !isExpanded);
+                    childrenContainer.style.display = isExpanded ? 'none' : 'block';
+                    
+                    // 更新圖標
+                    const folderIcon = div.querySelector('.mdi-folder, .mdi-folder-open');
+                    if (folderIcon) {
+                        folderIcon.className = `mdi ${isExpanded ? 'mdi-folder' : 'mdi-folder-open'}`;
+                    }
+                });
+                
+                wrapper.appendChild(childrenContainer);
+            }
+            
+            return wrapper;
+        }
+
+        function renderTree() {
+            const treeContainer = document.getElementById('directoryTree');
+            treeContainer.innerHTML = '';
+            treeContainer.appendChild(createTreeItem(treeData));
+            
+            // 預設展開根目錄
+            const rootFolder = treeContainer.querySelector('.tree-item.folder');
+            if (rootFolder) {
+                rootFolder.click();
+            }
+        }
+
+        function initializeSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => {
+                const searchText = e.target.value.toLowerCase();
+                const allItems = document.querySelectorAll('.tree-item');
+                const allChildren = document.querySelectorAll('.tree-children');
+                
+                if (!searchText) {
+                    allItems.forEach(item => {
+                        item.style.display = 'flex';
+                        item.classList.remove('search-match');
+                    });
+                    allChildren.forEach(child => {
+                        child.style.display = 'none';
+                    });
+                    // 重新展開根目錄
+                    const rootFolder = document.querySelector('#directoryTree > .tree-item-wrapper > .tree-item.folder');
+                    if (rootFolder) {
+                        const rootChildren = rootFolder.parentElement.querySelector('.tree-children');
+                        if (rootChildren) {
+                            rootChildren.style.display = 'block';
+                        }
+                    }
+                    return;
+                }
+                
+                allItems.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    const shouldShow = text.includes(searchText);
+                    item.style.display = shouldShow ? 'flex' : 'none';
+                    item.classList.toggle('search-match', shouldShow);
+                    
+                    if (shouldShow) {
+                        let parent = item.closest('.tree-children');
+                        while (parent) {
+                            parent.style.display = 'block';
+                            const parentItem = parent.previousElementSibling;
+                            if (parentItem) {
+                                parentItem.style.display = 'flex';
+                            }
+                            parent = parent.parentElement.closest('.tree-children');
+                        }
+                    }
+                });
+            });
+        }
+
+        renderTree();
+        initializeSearch();
+    </script>
 </body>
 </html>
